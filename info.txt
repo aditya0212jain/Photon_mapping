@@ -1,0 +1,5 @@
+Press 'A' to toggle anti-aliasing
+All other functions are same as provided in the assignment description
+
+To Compile:
+g++ main.cpp -lGL -lGLEW -lglfw -o raytracer
