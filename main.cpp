@@ -3,7 +3,13 @@
 #include <vector>
 #include "GL/glew.h"
 #include <GLFW/glfw3.h>
-#include "helper.cpp"
+// #include "helper.cpp"
+#include "scene.h"
+#include "light.h"
+// #include "objects.h"
+// #include "utils.h"
+// #include "light.h"
+// #include "camera.h"
 #include <iostream>
 
 #define QUIT(m,v)      { fprintf(stderr, "%s:%s\n", m, v); exit(1); }
@@ -146,15 +152,6 @@ int main( int argc, char* args[] )
 
    GLubyte data[640*480*3];
    GLubyte color = 0;
-
-   ////////////////////////Changes/////////////////////////////////////
-
-   // std::vector<Object> scene_objects;
-   // std::vector<Object *> snow_man;
-   // std::vector<Object *> lying_spheres;
-   // std::vector<Object *> tubelights;
-   // std::vector<LightPoint> light_objects;
-   // std::vector<LightPoint *> lights;
    
    scene.make_scene();
    scene.trace_prep();
