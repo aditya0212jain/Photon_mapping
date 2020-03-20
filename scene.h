@@ -62,15 +62,25 @@ class Scene{
         anti_aliasing = !anti_aliasing;
     }
 
+    // Note: updated the trace_ray with trace_global_illumination
+    // so the program may not run as of now
     ColorRGB trace(int x,int y,int widht,int height);
 
     ColorRGB trace_ray(Ray ray,int depth,Object* exclude);
 
-    void make_photon_map();
-
-    glm::vec3 trace_photon(Photon p,int depth);
+    void trace_photon(Photon p,int depth);
 
     ColorRGB shade(Object* obj,Ray normal,glm::vec3 intersection,Ray incident);
+
+    // 20th March 
+    // Adding for PhotonMapping
+    // this function will update the photonmap 
+    // should be called everytime before tracing rays
+    void computePhotonMap();
+
+    // this function is the tracer used after creating 
+    // the photon map ( in place of the old trace_ray)
+    ColorRGB trace_global_illumination(Ray ray,int depth,Object* exclude);
 
 };
 

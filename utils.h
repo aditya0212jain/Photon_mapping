@@ -12,6 +12,7 @@
 #define LIGHT 4
 #define CYLINDER 5
 #define BALL 6
+#define TRACE_DEPTH 4
 
 typedef glm::vec3 ColorRGB;
 

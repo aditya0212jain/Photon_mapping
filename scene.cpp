@@ -304,7 +304,8 @@ ColorRGB Scene::trace(int x,int y,int width,int height){
             ray.direction = point2 - ray.origin;
             ray.direction = normalize(ray.direction);
             // std::cout<<"x,y,z: "<<ray.direction.x<<" "<<ray.direction.y<<" "<<ray.direction.z<<"\n";
-            traceColor += trace_ray(ray,4,nullptr);
+            traceColor += trace_global_illumination(ray,TRACE_DEPTH,nullptr);
+            // traceColor += trace_ray(ray,TRACE_DEPTH,nullptr);
         }
 
         traceColor = traceColor*(float)(1.0/((float)n));
@@ -324,7 +325,8 @@ ColorRGB Scene::trace(int x,int y,int width,int height){
     ray.direction = point2 - ray.origin;
     ray.direction = normalize(ray.direction);
     // std::cout<<"x,y,z: "<<ray.direction.x<<" "<<ray.direction.y<<" "<<ray.direction.z<<"\n";
-    return trace_ray(ray,4,nullptr);
+    return trace_global_illumination(ray,TRACE_DEPTH,nullptr);
+    return trace_ray(ray,TRACE_DEPTH,nullptr);
 }
 
 
@@ -430,11 +432,12 @@ ColorRGB Scene::trace_ray(Ray ray,int depth,Object* exclude){
     
 }
 
-glm::vec3 Scene::trace_photon(Photon p,int depth){
+void Scene::trace_photon(Photon p,int depth){
     if (depth<=0){
         KDTreeNode node;
         node.p = p;
         photon_map_.insert(node);
+        return;
     }
     //////
     /*
@@ -461,7 +464,7 @@ glm::vec3 Scene::trace_photon(Photon p,int depth){
 
     //if no intersection
     if(nearest_object==nullptr){
-        return glm::vec3(0);
+        return ;
     }
     
     glm::vec3 intersectionPoint = ray.origin + ray.direction*minD;
@@ -496,6 +499,8 @@ glm::vec3 Scene::trace_photon(Photon p,int depth){
         node.p = p;
         photon_map_.insert(node);
     }
+
+    return;
 
 }
 
@@ -539,4 +544,36 @@ glm::vec3 Scene::rotate_point_xconstant(glm::vec3 point,float angle){
     point.y = ynew;
     point.z = znew;
     return point;
+}
+
+void Scene::computePhotonMap(){
+    // Adding for PhotonMapping
+    // this function will update the photonmap 
+    // should be called everytime before tracing rays
+    
+    // Below is the pseudocode
+    // use the trace_photon function for tracing
+    // trace_photon automatically updates the photon_map
+    // make sure to empty the photon_map each time
+
+    // foreach Light* L
+    // {
+    // for( i = 1 to nPhotons )
+    // {
+    // {power, position, direction} =
+    // trace_photon( L, L->randomDir(), L->color() );
+    // photonMap_->store( power, position, direction );
+    // }
+    // photonMap_->scale_photon_power( 1.0/nPhotons );
+    // }
+    // photonMap_->balance();
+
+}
+
+ColorRGB Scene::trace_global_illumination(Ray ray,int depth,Object* exclude){
+    // this function is the tracer used after creating 
+    // the photon map ( in place of the old trace_ray)
+    
+    
+
 }
