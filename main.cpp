@@ -155,6 +155,9 @@ int main( int argc, char* args[] )
    
    scene.make_scene();
    scene.trace_prep();
+   std::cout<<"scene made"<<std::endl;
+   scene.compute_photon_map();
+   std::cout<<"photon map made"<<std::endl;
    ////////////////////////////////////////////////////////////////////
    ///////////////////////Changing Data//////////////////////////////////////
 

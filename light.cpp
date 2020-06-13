@@ -23,7 +23,7 @@ float LightPoint::DistanceDrop(glm::vec3 intersection){
     float dis = sqrt(dis2);
     float ka=1,kb=1,kc=2;
     // this was very important
-    float disinc = 20/((dis2*kc)+(dis*kb)+(ka));
+    float disinc = 55/((dis2*kc)+(dis*kb)+(ka));
     // disinc = 1;
     return disinc;
 }

@@ -45,7 +45,8 @@ Scene::Scene(){}
 void Scene::make_scene(){
     // camera.position = glm::vec3(60*R,60*R,60*R);
     place_lights();
-    place_all_objects();
+    // TODO: update this 
+    place_all_objects_2();
 }
 
 void Scene::update_camera(int type,int forward){
@@ -209,6 +210,87 @@ void Scene::place_all_objects(){
 
 }
 
+void Scene::place_all_objects_2(){
+    // placing the 12 balls 
+    ColorRGB cyan(0,1,1);
+    ColorRGB orange(1,0.647,0);
+    ColorRGB magenta(1,0,1);
+    for(int i=0;i<1;i++){
+        float angle = 0;
+        float x = 0;
+        float z = 0;
+        // Sphere s(R/4,glm::vec3(x,-2*R+R/4,z));
+        float refle = (i%2==0) ? 0.30:0.9;
+        float refra = (i%2==0) ? 0.60:0.0;
+        ColorRGB coltemp;
+        switch (i%3)
+        {
+        case 0:
+            coltemp = ColorRGB(1,1,1);
+            break;
+        case 1:
+            coltemp = orange;
+            break;
+        case 2:
+            coltemp = magenta;
+        default:
+            break;
+        }
+        if(i%2==0){
+            coltemp=glm::vec3(1,1,1);
+        }
+        //reflection, refraction, color, diffuse, spec
+        scene_objects_ptr.push_back(new Sphere(R,glm::vec3(x,0,z),i%2));
+        scene_objects_ptr[scene_objects_ptr.size()-1]->set_properties(refle,refra,coltemp,0.25,0.75);
+        if(i%2==0){
+            scene_objects_ptr[scene_objects_ptr.size()-1]->belong=GLASS;
+        }else{
+            scene_objects_ptr[scene_objects_ptr.size()-1]->belong =BALL;
+        }
+    }
+
+    //placing snowman
+    // place_snowman();
+
+    //Placing lights
+    // float x_r[]= {2*R,-2*R};
+    // for(int i=0;i<2;i++){
+    //     for(int j=0;j<2;j++){
+    //         scene_objects_ptr.push_back(new Cylinder(R/25,R,glm::vec3(x_r[i],-2*R,x_r[j])));
+    //         scene_objects_ptr[scene_objects_ptr.size()-1]->belong= CYLINDER;
+    //     }
+    // }
+
+    //placing walls
+
+    scene_objects_ptr.push_back(new Wall(glm::vec3(2*R,R,0),glm::vec3(-1,0,0)));
+    scene_objects_ptr[scene_objects_ptr.size()-1]->set_properties(0.9,0.0,ColorRGB(0,0,1),1,0);
+    scene_objects_ptr[scene_objects_ptr.size()-1]->belong = WALL;
+
+    scene_objects_ptr.push_back(new Wall(glm::vec3(-2*R,R,0),glm::vec3(1,0,0)));
+    scene_objects_ptr[scene_objects_ptr.size()-1]->set_properties(0.9,0.0,ColorRGB(1,0,0),1,0);
+    scene_objects_ptr[scene_objects_ptr.size()-1]->belong = WALL;
+
+    scene_objects_ptr.push_back(new Wall(glm::vec3(0,R,-2*R),glm::vec3(0,0,1)));
+    scene_objects_ptr[scene_objects_ptr.size()-1]->set_properties(0.9,0.0,ColorRGB(1,1,1),1,0);
+    scene_objects_ptr[scene_objects_ptr.size()-1]->belong = WALL;
+
+    // scene_objects_ptr.push_back(new Wall(glm::vec3(0,R,2*R),glm::vec3(0,0,-1)));
+    // scene_objects_ptr[scene_objects_ptr.size()-1]->set_properties(0.9,0.0,ColorRGB(1,0,0),0.65,0.35);
+    // scene_objects_ptr[scene_objects_ptr.size()-1]->belong = WALL;
+
+    // // up
+    scene_objects_ptr.push_back(new Wall(glm::vec3(0,2*R,0),glm::vec3(0,-1,0)));
+    scene_objects_ptr[scene_objects_ptr.size()-1]->set_properties(0.9,0.0,ColorRGB(0,0,0),1,0);
+    scene_objects_ptr[scene_objects_ptr.size()-1]->belong = WALL;
+
+    // // down
+    scene_objects_ptr.push_back(new Wall(glm::vec3(0,-2*R,0),glm::vec3(0,1,0)));
+    scene_objects_ptr[scene_objects_ptr.size()-1]->set_properties(0.9,0.0,ColorRGB(1,1,1),1,0);
+    scene_objects_ptr[scene_objects_ptr.size()-1]->belong = WALL;
+
+}
+
 void Scene::place_snowman(){
     //reflection, refraction, color, diffuse, spec
     scene_objects_ptr.push_back(new Sphere(R,glm::vec3(0,-R,0)));
@@ -234,19 +316,32 @@ void Scene::place_snowman(){
 }
 
 void Scene::place_lights(){
-    float x[] = {2*R,-2*R};
-    float y[] = {2*R,(float)2*R/(float)3.0,(float)(-2*R)/(float)3.0,-2*R};
+    // float x[] = {2*R,-2*R};
+    // float y[] = {2*R,(float)2*R/(float)3.0,(float)(-2*R)/(float)3.0,-2*R};
+    // // float y[] = {2*R};
+    // for(int xt=0;xt<2;xt++){
+    //     for(int yt=0;yt<4;yt++){
+    //         for(int zt=0;zt<2;zt++){
+    //             light_objects.push_back(LightPoint(glm::vec3(x[xt],-2*R+(yt*(R/3.0)),x[zt])));
+    //             // light_objects.push_back(LightPoint(glm::vec3(x[xt],(yt*(R/3.0)),x[zt])));
+    //             // lights.push_back(&light_objects[light_objects.size()-1]);
+    //         }
+    //     }
+    // }
+
+    // float z[] = {R,-R};
+    // float y[] = {2*R,(float)2*R/(float)3.0,(float)(-2*R)/(float)3.0,-2*R};
     // float y[] = {2*R};
-    for(int xt=0;xt<2;xt++){
-        for(int yt=0;yt<4;yt++){
-            for(int zt=0;zt<2;zt++){
-                light_objects.push_back(LightPoint(glm::vec3(x[xt],-2*R+(yt*(R/3.0)),x[zt])));
-                // light_objects.push_back(LightPoint(glm::vec3(x[xt],(yt*(R/3.0)),x[zt])));
-                // lights.push_back(&light_objects[light_objects.size()-1]);
-            }
-        }
-    }
-    // light_objects.push_back(LightPoint(glm::vec3(2*R,2*R,2*R)));
+    // for(int xt=0;xt<4;xt++){
+    //     for(int yt=0;yt<1;yt++){
+    //         for(int zt=0;zt<2;zt++){
+    //             light_objects.push_back(LightPoint(glm::vec3(R+xt/3,2*R,z[zt])));
+    //             light_objects.push_back(LightPoint(glm::vec3(x[xt],(yt*(R/3.0)),x[zt])));
+    //             lights.push_back(&light_objects[light_objects.size()-1]);
+    //         }
+    //     }
+    // }
+    light_objects.push_back(LightPoint(glm::vec3(0,2*R,R)));
 }
 
 void Scene::trace_prep(){
@@ -304,8 +399,8 @@ ColorRGB Scene::trace(int x,int y,int width,int height){
             ray.direction = point2 - ray.origin;
             ray.direction = normalize(ray.direction);
             // std::cout<<"x,y,z: "<<ray.direction.x<<" "<<ray.direction.y<<" "<<ray.direction.z<<"\n";
-            traceColor += trace_global_illumination(ray,TRACE_DEPTH,nullptr);
-            // traceColor += trace_ray(ray,TRACE_DEPTH,nullptr);
+            // traceColor += trace_global_illumination(ray,TRACE_DEPTH,nullptr);
+            traceColor += trace_ray(ray,TRACE_DEPTH,nullptr);
         }
 
         traceColor = traceColor*(float)(1.0/((float)n));
@@ -318,14 +413,17 @@ ColorRGB Scene::trace(int x,int y,int width,int height){
     ray_dir = normalize(ray_dir);
     Ray ray(camera.position, ray_dir);
     glm::vec3 point2 = ray.origin+ray.direction;
-    ray.origin = rotate_point_yconstant(ray.origin,angle_y);
-    ray.origin = rotate_point_xconstant(ray.origin,angle_x);
-    point2 = rotate_point_yconstant(point2,angle_y);
-    point2 = rotate_point_xconstant(point2,angle_x);
+    // NOTE: not rotating for now
+    // ray.origin = rotate_point_yconstant(ray.origin,angle_y);
+    // ray.origin = rotate_point_xconstant(ray.origin,angle_x);
+    // point2 = rotate_point_yconstant(point2,angle_y);
+    // point2 = rotate_point_xconstant(point2,angle_x);
     ray.direction = point2 - ray.origin;
     ray.direction = normalize(ray.direction);
     // std::cout<<"x,y,z: "<<ray.direction.x<<" "<<ray.direction.y<<" "<<ray.direction.z<<"\n";
-    return trace_global_illumination(ray,TRACE_DEPTH,nullptr);
+    // return trace_global_illumination(ray,TRACE_DEPTH,nullptr);
+    // return trace_ray(ray,TRACE_DEPTH,nullptr) + indirect_illumination(ray);
+    // return indirect_illumination(ray);
     return trace_ray(ray,TRACE_DEPTH,nullptr);
 }
 
@@ -349,7 +447,7 @@ ColorRGB Scene::trace_ray(Ray ray,int depth,Object* exclude){
     
     // std::cout<<scene_objects.size()<<std::endl;
     for(int i=0;i<scene_objects_ptr.size();i++){
-        if(scene_objects_ptr[i]->intersect(ray,t)&&!(depth==4&&scene_objects_ptr[i]->type==3)){
+        if(scene_objects_ptr[i]->intersect(ray,t)){
             if(t<minD){
                 minD = t;
                 nearest_object = scene_objects_ptr[i];
@@ -403,18 +501,23 @@ ColorRGB Scene::trace_ray(Ray ray,int depth,Object* exclude){
     }else if(nearest_object->belong==CYLINDER){
         return nearest_object->emissionColor;
     }else if(nearest_object->belong==WALL){
-        glm::vec3 reflection_ray = ray.direction - (normal.direction * (dot(normal.direction,ray.direction)*2));
-        reflection_ray = normalize(reflection_ray);
-        float bias = 1e-2;
 
-        float facingratio = dot(-ray.direction,normal.direction);
-        float fresnel = 1*(0.1) + (1-0.1)*pow(1-facingratio,3);
-        ColorRGB I_reflection = trace_ray(Ray(intersectionPoint+normal.direction*bias,reflection_ray),depth -1,nearest_object);
+        // TODO: Check the following
+        ColorRGB I_shade = shade(nearest_object,normal,intersectionPoint,ray);
+        return I_shade;
 
-        ColorRGB fresnelcolor = (I_reflection*fresnel*nearest_object->reflection);
+        // glm::vec3 reflection_ray = ray.direction - (normal.direction * (dot(normal.direction,ray.direction)*2));
+        // reflection_ray = normalize(reflection_ray);
+        // float bias = 1e-2;
+
+        // float facingratio = dot(-ray.direction,normal.direction);
+        // float fresnel = 1*(0.1) + (1-0.1)*pow(1-facingratio,3);
+        // ColorRGB I_reflection = trace_ray(Ray(intersectionPoint+normal.direction*bias,reflection_ray),depth -1,nearest_object);
+
+        // ColorRGB fresnelcolor = (I_reflection*fresnel*nearest_object->reflection);
         // ColorRGB I_shade = shade(nearest_object,normal,intersectionPoint,ray);
 
-        return fresnelcolor;
+        // return fresnelcolor;
     }else if(nearest_object->belong==BALL){
         ColorRGB I_shade = shade(nearest_object,normal,intersectionPoint,ray);
         glm::vec3 reflection_ray = ray.direction - (normal.direction * (dot(normal.direction,ray.direction)*2));
@@ -432,12 +535,12 @@ ColorRGB Scene::trace_ray(Ray ray,int depth,Object* exclude){
     
 }
 
-void Scene::trace_photon(Photon p,int depth){
+void Scene::trace_photon(Ray r,int depth,int& n_photon){
     if (depth<=0){
-        KDTreeNode node;
-        node.p = p;
-        photon_map_.insert(node);
-        return;
+        // KDTreeNode node;
+        // node.p.;
+        // photon_map.insert(node);
+        return ;
     }
     //////
     /*
@@ -450,11 +553,10 @@ void Scene::trace_photon(Photon p,int depth){
     float minD = INFINITY;
     float t;
     
-    Ray ray;
-    ray.origin = p.pos;
-    ray.direction = p.dir;
+    Ray ray = r;
+    // Finding intersection
     for(int i=0;i<scene_objects_ptr.size();i++){
-        if(scene_objects_ptr[i]->intersect(ray,t)&&!(depth==4&&scene_objects_ptr[i]->type==3)){
+        if(scene_objects_ptr[i]->intersect(ray,t)){
             if(t<minD){
                 minD = t;
                 nearest_object = scene_objects_ptr[i];
@@ -462,11 +564,13 @@ void Scene::trace_photon(Photon p,int depth){
         }
     }
 
+    // std::cout<<"trace_photon called\n";
+
     //if no intersection
     if(nearest_object==nullptr){
         return ;
     }
-    
+    // std::cout<<"intersection is not null\n";
     glm::vec3 intersectionPoint = ray.origin + ray.direction*minD;
     Ray normal = nearest_object->getNormal(intersectionPoint);
 
@@ -476,31 +580,40 @@ void Scene::trace_photon(Photon p,int depth){
         normal.direction = -normal.direction;
     }
 
-    float r = float(rand())/float((RAND_MAX));
-    if(r<nearest_object->reflection){
-        
-        glm::vec3 reflection_ray = ray.direction - (normal.direction * (2* dot(normal.direction,ray.direction)));
-        reflection_ray = normalize(reflection_ray);
-        p.pos = intersectionPoint;
-        p.dir = reflection_ray;
-        p.pos += 1e-5;
-        trace_photon(p,depth-1);
-    }else if (r<nearest_object->reflection+nearest_object->refraction){
+    float r1 = float(rand())/float((RAND_MAX));
+    // Russian roullete
+    if(r1<nearest_object->reflection){
+        // photon is reflected
+        glm::vec3 reflection_ray_dir = ray.direction - (normal.direction * (2* dot(normal.direction,ray.direction)));
+        reflection_ray_dir = normalize(reflection_ray_dir);
+        Ray reflection_ray;
+        reflection_ray.direction = reflection_ray_dir;
+        reflection_ray.origin = intersectionPoint;
+        trace_photon(reflection_ray,depth-1,n_photon);
+    }else if (r1<(nearest_object->reflection+nearest_object->refraction)){
+        // photon is refracted
         float ior = 1.1, eta = (inside) ? ior : 1 / ior; // are we inside or outside the surface?
         float cosi = -dot(ray.direction,normal.direction);
         float k = 1 - eta * eta * (1 - cosi * cosi);
         glm::vec3 refraction_dir = ray.direction * eta + normal.direction * (float) (eta *  cosi - sqrt(k));
         refraction_dir = normalize(refraction_dir);
-        p.pos = intersectionPoint;
-        p.dir = refraction_dir;
-        trace_photon(p,depth-1);
+        Ray refraction_ray;
+        refraction_ray.direction = refraction_dir;
+        refraction_ray.origin = intersectionPoint;
+        trace_photon(refraction_ray,depth-1,n_photon);
     }else{
+        // photon is absorbed
         KDTreeNode node;
-        node.p = p;
-        photon_map_.insert(node);
+        node.p.dir = -r.direction;
+        node.p.pos = intersectionPoint;
+        //TODO: check the spectral power 
+        node.p.spectral = glm::vec3(1,1,1)/(float)N_PHOTONS_GLOBAL;
+        photon_map.insert(node);
+        n_photon++;
+        // std::cout<<"photon is added "<<n_photon<<"\n";
     }
 
-    return;
+    return ;
 
 }
 
@@ -546,7 +659,7 @@ glm::vec3 Scene::rotate_point_xconstant(glm::vec3 point,float angle){
     return point;
 }
 
-void Scene::computePhotonMap(){
+void Scene::compute_photon_map(){
     // Adding for PhotonMapping
     // this function will update the photonmap 
     // should be called everytime before tracing rays
@@ -556,24 +669,85 @@ void Scene::computePhotonMap(){
     // trace_photon automatically updates the photon_map
     // make sure to empty the photon_map each time
 
-    // foreach Light* L
-    // {
-    // for( i = 1 to nPhotons )
-    // {
-    // {power, position, direction} =
-    // trace_photon( L, L->randomDir(), L->color() );
-    // photonMap_->store( power, position, direction );
-    // }
-    // photonMap_->scale_photon_power( 1.0/nPhotons );
-    // }
-    // photonMap_->balance();
+    // Generates Global Photon Map
+
+    int n_photon = 0;
+    std::cout<<"lights: "<<light_objects.size()<<"\n";
+    for(int i=0;i<light_objects.size();i++){
+
+        while(n_photon<N_PHOTONS_GLOBAL/light_objects.size()){
+
+            glm::vec3 d(float(rand())/float((RAND_MAX)),float(rand())/float((RAND_MAX)),float(rand())/float((RAND_MAX)));
+            Ray r;
+            // std::cout<<"d: "<<d.x<<" "<<d.y<<" "<<d.z<<"\n";
+            r.origin = light_objects[i].origin;
+            r.direction = d;
+            trace_photon(r,TRACE_DEPTH_PHOTON,n_photon);
+            // break;
+            // std::cout<<"photons: "<<n_photon<<"\n";
+        }
+    }
+
+    photon_map.optimize();
+
 
 }
 
-ColorRGB Scene::trace_global_illumination(Ray ray,int depth,Object* exclude){
+ColorRGB Scene::indirect_illumination(Ray ray){
     // this function is the tracer used after creating 
     // the photon map ( in place of the old trace_ray)
     
+    // uses global_photon_map
+
+
+    // Steps:
+    // 1) get the intersection object 
+    // 2) get the closest photons from photonmap
+    // 3) add the contribution of each photon 
+    // Return the contribution
+
+    // Intersection
     
+    Object* nearest_object=nullptr;
+    float minD = INFINITY;
+    float t;
+    
+    // std::cout<<scene_objects.size()<<std::endl;
+    for(int i=0;i<scene_objects_ptr.size();i++){
+        if(scene_objects_ptr[i]->intersect(ray,t)){
+            if(t<minD){
+                minD = t;
+                nearest_object = scene_objects_ptr[i];
+            }
+        }
+    }
+
+    //if no intersection
+    if(nearest_object==nullptr){
+        return ColorRGB(0,0,0);
+    }
+    
+    glm::vec3 intersectionPoint = ray.origin + ray.direction*minD;
+    Ray normal = nearest_object->getNormal(intersectionPoint);
+
+    bool inside = false;
+    if (dot(normal.direction,ray.direction)>0){
+        inside = true;
+        normal.direction = -normal.direction;
+    }
+
+    KDTreeNode intersection_node;
+    intersection_node.p.pos = intersectionPoint;
+
+    std::vector<KDTreeNode> contributing_photons;
+    photon_map.find_within_range(intersection_node,PHOTON_RADIUS,std::back_insert_iterator<std::vector<KDTreeNode> >(contributing_photons));
+
+    ColorRGB total;
+    for(int i=0;i<contributing_photons.size();i++){
+        //TODO: check the relation, needs to be updated *nearest_object->diffuse*nearest_object->reflection
+        total += contributing_photons[i].p.spectral;
+    }
+
+    return total;
 
 }

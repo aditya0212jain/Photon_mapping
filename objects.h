@@ -17,6 +17,7 @@ class Object{
     bool isSnowman= false;
     int belong=0;
     float absorption;
+    // TODO: need to add refractive index
 
     void set_properties(float refl,float refr,glm::vec3 colr,float diff,float spec);
 

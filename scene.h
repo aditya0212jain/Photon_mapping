@@ -8,6 +8,8 @@
 #include "camera.h"
 #include "./kdtree++/kdtree.hpp"
 
+#define N_PHOTONS_GLOBAL 1000
+
 class LightPoint;
 
 class Scene{
@@ -21,7 +23,7 @@ class Scene{
     std::vector<Object *> tubelights;
     std::vector<LightPoint> light_objects;
     std::vector<LightPoint *> lights;
-    KDTree::KDTree<3, KDTreeNode> photon_map_;
+    KDTree::KDTree<3, KDTreeNode> photon_map;
     int toggle=2;
     bool anti_aliasing=false;
     // just for testing
@@ -48,6 +50,8 @@ class Scene{
 
     void place_all_objects();
 
+    void place_all_objects_2();
+
     void place_snowman();
 
     void update_camera(int type,int forward);
@@ -68,7 +72,7 @@ class Scene{
 
     ColorRGB trace_ray(Ray ray,int depth,Object* exclude);
 
-    void trace_photon(Photon p,int depth);
+    void trace_photon(Ray p,int depth,int& n_photon);
 
     ColorRGB shade(Object* obj,Ray normal,glm::vec3 intersection,Ray incident);
 
@@ -76,11 +80,11 @@ class Scene{
     // Adding for PhotonMapping
     // this function will update the photonmap 
     // should be called everytime before tracing rays
-    void computePhotonMap();
+    void compute_photon_map();
 
     // this function is the tracer used after creating 
     // the photon map ( in place of the old trace_ray)
-    ColorRGB trace_global_illumination(Ray ray,int depth,Object* exclude);
+    ColorRGB indirect_illumination(Ray ray);
 
 };
 

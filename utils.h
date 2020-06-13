@@ -14,6 +14,9 @@
 #define BALL 6
 #define TRACE_DEPTH 4
 
+#define TRACE_DEPTH_PHOTON 4
+#define PHOTON_RADIUS 0.1
+
 typedef glm::vec3 ColorRGB;
 
 
