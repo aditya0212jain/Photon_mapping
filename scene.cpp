@@ -46,6 +46,7 @@ void Scene::make_scene(){
     // camera.position = glm::vec3(60*R,60*R,60*R);
     place_lights();
     place_all_objects();
+    std::cout << scene_objects_ptr.size() << " afsdfsd " << std::endl;
 }
 
 void Scene::update_camera(int type,int forward){
@@ -133,10 +134,10 @@ void Scene::place_all_objects(){
     ColorRGB cyan(0,1,1);
     ColorRGB orange(1,0.647,0);
     ColorRGB magenta(1,0,1);
-    for(int i=0;i<12;i++){
-        float angle = i*30;
-        float x = 1.5*R*cos(M_PI*angle/180);
-        float z = 1.5*R*sin(M_PI*angle/180);
+    for(int i=0;i<1;i++){
+        float angle = 0;
+        float x = 0;
+        float z = 0;
         // Sphere s(R/4,glm::vec3(x,-2*R+R/4,z));
         float refle = (i%2==0) ? 0.30:0.9;
         float refra = (i%2==0) ? 0.60:0.0;
@@ -144,7 +145,7 @@ void Scene::place_all_objects(){
         switch (i%3)
         {
         case 0:
-            coltemp = cyan;
+            coltemp = ColorRGB(1,1,1);
             break;
         case 1:
             coltemp = orange;
@@ -158,7 +159,7 @@ void Scene::place_all_objects(){
             coltemp=glm::vec3(1,1,1);
         }
         //reflection, refraction, color, diffuse, spec
-        scene_objects_ptr.push_back(new Sphere(R/4,glm::vec3(x,-2*R+R/4,z),i%2));
+        scene_objects_ptr.push_back(new Sphere(R,glm::vec3(x,0,z),i%2));
         scene_objects_ptr[scene_objects_ptr.size()-1]->set_properties(refle,refra,coltemp,0.25,0.75);
         if(i%2==0){
             scene_objects_ptr[scene_objects_ptr.size()-1]->belong=GLASS;
@@ -168,50 +169,50 @@ void Scene::place_all_objects(){
     }
 
     //placing snowman
-    place_snowman();
+    // place_snowman();
 
     //Placing lights
-    float x_r[]= {2*R,-2*R};
-    for(int i=0;i<2;i++){
-        for(int j=0;j<2;j++){
-            scene_objects_ptr.push_back(new Cylinder(R/25,R,glm::vec3(x_r[i],-2*R,x_r[j])));
-            scene_objects_ptr[scene_objects_ptr.size()-1]->belong= CYLINDER;
-        }
-    }
+    // float x_r[]= {2*R,-2*R};
+    // for(int i=0;i<2;i++){
+    //     for(int j=0;j<2;j++){
+    //         scene_objects_ptr.push_back(new Cylinder(R/25,R,glm::vec3(x_r[i],-2*R,x_r[j])));
+    //         scene_objects_ptr[scene_objects_ptr.size()-1]->belong= CYLINDER;
+    //     }
+    // }
 
     //placing walls
 
-    scene_objects_ptr.push_back(new Wall(glm::vec3(2*R,0,0),glm::vec3(-1,0,0)));
-    scene_objects_ptr[scene_objects_ptr.size()-1]->set_properties(1,0.0,ColorRGB(1,0,0),1.0,0.0);
+    scene_objects_ptr.push_back(new Wall(glm::vec3(2*R,R,0),glm::vec3(-1,0,0)));
+    scene_objects_ptr[scene_objects_ptr.size()-1]->set_properties(0.9,0.0,ColorRGB(0,0,1),1,0);
     scene_objects_ptr[scene_objects_ptr.size()-1]->belong = WALL;
 
-    scene_objects_ptr.push_back(new Wall(glm::vec3(-2*R,0,0),glm::vec3(1,0,0)));
-    scene_objects_ptr[scene_objects_ptr.size()-1]->set_properties(1,0.0,ColorRGB(1,0,0),1.0,0.0);
+    scene_objects_ptr.push_back(new Wall(glm::vec3(-2*R,R,0),glm::vec3(1,0,0)));
+    scene_objects_ptr[scene_objects_ptr.size()-1]->set_properties(0.9,0.0,ColorRGB(1,0,0),1,0);
     scene_objects_ptr[scene_objects_ptr.size()-1]->belong = WALL;
 
-    scene_objects_ptr.push_back(new Wall(glm::vec3(0,0,-2*R),glm::vec3(0,0,1)));
-    scene_objects_ptr[scene_objects_ptr.size()-1]->set_properties(1,0.0,ColorRGB(1,0,0),0.0,1.0);
+    scene_objects_ptr.push_back(new Wall(glm::vec3(0,R,-2*R),glm::vec3(0,0,1)));
+    scene_objects_ptr[scene_objects_ptr.size()-1]->set_properties(0.9,0.0,ColorRGB(1,1,1),1,0);
     scene_objects_ptr[scene_objects_ptr.size()-1]->belong = WALL;
 
-    scene_objects_ptr.push_back(new Wall(glm::vec3(0,0,2*R),glm::vec3(0,0,-1)));
-    scene_objects_ptr[scene_objects_ptr.size()-1]->set_properties(1,0.0,ColorRGB(1,0,0),1.0,0.0);
-    scene_objects_ptr[scene_objects_ptr.size()-1]->belong = WALL;
+    // scene_objects_ptr.push_back(new Wall(glm::vec3(0,R,2*R),glm::vec3(0,0,-1)));
+    // scene_objects_ptr[scene_objects_ptr.size()-1]->set_properties(0.9,0.0,ColorRGB(1,0,0),0.65,0.35);
+    // scene_objects_ptr[scene_objects_ptr.size()-1]->belong = WALL;
 
-    // up
+    // // up
     scene_objects_ptr.push_back(new Wall(glm::vec3(0,2*R,0),glm::vec3(0,-1,0)));
-    scene_objects_ptr[scene_objects_ptr.size()-1]->set_properties(1,0.0,ColorRGB(0,1,0),1.0,0.0);
+    scene_objects_ptr[scene_objects_ptr.size()-1]->set_properties(0.9,0.0,ColorRGB(0,0,0),1,0);
     scene_objects_ptr[scene_objects_ptr.size()-1]->belong = WALL;
 
-    // down
+    // // down
     scene_objects_ptr.push_back(new Wall(glm::vec3(0,-2*R,0),glm::vec3(0,1,0)));
-    scene_objects_ptr[scene_objects_ptr.size()-1]->set_properties(1,0.0,ColorRGB(1,1,1),1.0,0.0);
+    scene_objects_ptr[scene_objects_ptr.size()-1]->set_properties(0.9,0.0,ColorRGB(1,1,1),1,0);
     scene_objects_ptr[scene_objects_ptr.size()-1]->belong = WALL;
 
 }
 
 void Scene::place_snowman(){
     //reflection, refraction, color, diffuse, spec
-    scene_objects_ptr.push_back(new Sphere(R,glm::vec3(0,-R,0)));
+    scene_objects_ptr.push_back(new Sphere(R,glm::vec3(0,0,0)));
     scene_objects_ptr[scene_objects_ptr.size()-1]->set_properties(0.9,0.0,ColorRGB(1,1,1),0.65,0.35);
     scene_objects_ptr[scene_objects_ptr.size()-1]->isSnowman = true;
     scene_objects_ptr[scene_objects_ptr.size()-1]->belong = SNOWMAN;
@@ -219,28 +220,28 @@ void Scene::place_snowman(){
 
     // Sphere s1(R/2,glm::vec3(0,-R+d1,0));
     //reflection, refraction, color, diffuse, spec
-    scene_objects_ptr.push_back(new Sphere(R/2,glm::vec3(0,-R+d1,0)));
-    scene_objects_ptr[scene_objects_ptr.size()-1]->set_properties(0.9,0.0,ColorRGB(1,1,1),0.65,0.35);
-    scene_objects_ptr[scene_objects_ptr.size()-1]->isSnowman = true;
-    scene_objects_ptr[scene_objects_ptr.size()-1]->belong = SNOWMAN;
-    float d2 = getDistanceBetweenSpheres(R/2,R/4,60);
+    // scene_objects_ptr.push_back(new Sphere(R/2,glm::vec3(0,-R+d1,0)));
+    // scene_objects_ptr[scene_objects_ptr.size()-1]->set_properties(0.9,0.0,ColorRGB(1,1,1),0.65,0.35);
+    // scene_objects_ptr[scene_objects_ptr.size()-1]->isSnowman = true;
+    // scene_objects_ptr[scene_objects_ptr.size()-1]->belong = SNOWMAN;
+    // float d2 = getDistanceBetweenSpheres(R/2,R/4,60);
 
-    Sphere s2(R/4,glm::vec3(0,-R+d1+d2,0));
-    //reflection, refraction, color, diffuse, spec
-    scene_objects_ptr.push_back(new Sphere(R/4,glm::vec3(0,-R+d1+d2,0)));
-    scene_objects_ptr[scene_objects_ptr.size()-1]->set_properties(0.9,0.0,ColorRGB(1,1,1),0.65,0.35);
-    scene_objects_ptr[scene_objects_ptr.size()-1]->isSnowman = true;
-    scene_objects_ptr[scene_objects_ptr.size()-1]->belong = SNOWMAN;
+    // Sphere s2(R/4,glm::vec3(0,-R+d1+d2,0));
+    // //reflection, refraction, color, diffuse, spec
+    // scene_objects_ptr.push_back(new Sphere(R/4,glm::vec3(0,-R+d1+d2,0)));
+    // scene_objects_ptr[scene_objects_ptr.size()-1]->set_properties(0.9,0.0,ColorRGB(1,1,1),0.65,0.35);
+    // scene_objects_ptr[scene_objects_ptr.size()-1]->isSnowman = true;
+    // scene_objects_ptr[scene_objects_ptr.size()-1]->belong = SNOWMAN;
 }
 
 void Scene::place_lights(){
-    float x[] = {2*R,-2*R};
+    float z[] = {R,-R};
     float y[] = {2*R,(float)2*R/(float)3.0,(float)(-2*R)/(float)3.0,-2*R};
     // float y[] = {2*R};
-    for(int xt=0;xt<2;xt++){
-        for(int yt=0;yt<4;yt++){
+    for(int xt=0;xt<4;xt++){
+        for(int yt=0;yt<1;yt++){
             for(int zt=0;zt<2;zt++){
-                light_objects.push_back(LightPoint(glm::vec3(x[xt],-2*R+(yt*(R/3.0)),x[zt])));
+                light_objects.push_back(LightPoint(glm::vec3(R+xt/3,2*R,z[zt])));
                 // light_objects.push_back(LightPoint(glm::vec3(x[xt],(yt*(R/3.0)),x[zt])));
                 // lights.push_back(&light_objects[light_objects.size()-1]);
             }
@@ -304,8 +305,8 @@ ColorRGB Scene::trace(int x,int y,int width,int height){
             ray.direction = point2 - ray.origin;
             ray.direction = normalize(ray.direction);
             // std::cout<<"x,y,z: "<<ray.direction.x<<" "<<ray.direction.y<<" "<<ray.direction.z<<"\n";
-            traceColor += trace_global_illumination(ray,TRACE_DEPTH,nullptr);
-            // traceColor += trace_ray(ray,TRACE_DEPTH,nullptr);
+            // traceColor += trace_global_illumination(ray,TRACE_DEPTH,nullptr);
+            traceColor += trace_ray(ray,TRACE_DEPTH,nullptr);
         }
 
         traceColor = traceColor*(float)(1.0/((float)n));
@@ -325,7 +326,7 @@ ColorRGB Scene::trace(int x,int y,int width,int height){
     ray.direction = point2 - ray.origin;
     ray.direction = normalize(ray.direction);
     // std::cout<<"x,y,z: "<<ray.direction.x<<" "<<ray.direction.y<<" "<<ray.direction.z<<"\n";
-    return trace_global_illumination(ray,TRACE_DEPTH,nullptr);
+    // return trace_global_illumination(ray,TRACE_DEPTH,nullptr);
     return trace_ray(ray,TRACE_DEPTH,nullptr);
 }
 
@@ -347,9 +348,9 @@ ColorRGB Scene::trace_ray(Ray ray,int depth,Object* exclude){
     float minD = INFINITY;
     float t;
     
-    // std::cout<<scene_objects.size()<<std::endl;
+    // std::cout<<scene_objects_ptr.size()<<std::endl;
     for(int i=0;i<scene_objects_ptr.size();i++){
-        if(scene_objects_ptr[i]->intersect(ray,t)&&!(depth==4&&scene_objects_ptr[i]->type==3)){
+        if(scene_objects_ptr[i]->intersect(ray,t)){
             if(t<minD){
                 minD = t;
                 nearest_object = scene_objects_ptr[i];
@@ -372,6 +373,7 @@ ColorRGB Scene::trace_ray(Ray ray,int depth,Object* exclude){
     }
 
     if(nearest_object->belong==SNOWMAN){
+        // std :: cout <<"YOOOOO" << std::endl;
         ColorRGB I_shade = shade(nearest_object,normal,intersectionPoint,ray);
         return I_shade;
     }else if(nearest_object->belong==GLASS){
@@ -403,18 +405,21 @@ ColorRGB Scene::trace_ray(Ray ray,int depth,Object* exclude){
     }else if(nearest_object->belong==CYLINDER){
         return nearest_object->emissionColor;
     }else if(nearest_object->belong==WALL){
-        glm::vec3 reflection_ray = ray.direction - (normal.direction * (dot(normal.direction,ray.direction)*2));
-        reflection_ray = normalize(reflection_ray);
-        float bias = 1e-2;
+        // std :: cout <<"YOOOOO" << std::endl;
+        ColorRGB I_shade = shade(nearest_object,normal,intersectionPoint,ray);
+        return I_shade;
+        // glm::vec3 reflection_ray = ray.direction - (normal.direction * (dot(normal.direction,ray.direction)*2));
+        // reflection_ray = normalize(reflection_ray);
+        // float bias = 1e-2;
 
-        float facingratio = dot(-ray.direction,normal.direction);
-        float fresnel = 1*(0.1) + (1-0.1)*pow(1-facingratio,3);
-        ColorRGB I_reflection = trace_ray(Ray(intersectionPoint+normal.direction*bias,reflection_ray),depth -1,nearest_object);
+        // float facingratio = dot(-ray.direction,normal.direction);
+        // float fresnel = 1*(0.1) + (1-0.1)*pow(1-facingratio,3);
+        // ColorRGB I_reflection = trace_ray(Ray(intersectionPoint+normal.direction*bias,reflection_ray),depth -1,nearest_object);
 
-        ColorRGB fresnelcolor = (I_reflection*fresnel*nearest_object->reflection);
-        // ColorRGB I_shade = shade(nearest_object,normal,intersectionPoint,ray);
+        // ColorRGB fresnelcolor = (I_reflection*fresnel*nearest_object->reflection);
+        // // ColorRGB I_shade = shade(nearest_object,normal,intersectionPoint,ray);
 
-        return fresnelcolor;
+        // return fresnelcolor;
     }else if(nearest_object->belong==BALL){
         ColorRGB I_shade = shade(nearest_object,normal,intersectionPoint,ray);
         glm::vec3 reflection_ray = ray.direction - (normal.direction * (dot(normal.direction,ray.direction)*2));
@@ -574,6 +579,6 @@ ColorRGB Scene::trace_global_illumination(Ray ray,int depth,Object* exclude){
     // this function is the tracer used after creating 
     // the photon map ( in place of the old trace_ray)
     
-    
+    return ColorRGB(0,0,0);
 
 }
