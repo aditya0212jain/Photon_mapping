@@ -8,7 +8,7 @@
 #include "camera.h"
 #include "./kdtree++/kdtree.hpp"
 
-#define N_PHOTONS_GLOBAL 1000
+
 
 class LightPoint;
 

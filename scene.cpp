@@ -281,7 +281,7 @@ void Scene::place_all_objects_2(){
 
     // // up
     scene_objects_ptr.push_back(new Wall(glm::vec3(0,2*R,0),glm::vec3(0,-1,0)));
-    scene_objects_ptr[scene_objects_ptr.size()-1]->set_properties(0.9,0.0,ColorRGB(0,0,0),1,0);
+    scene_objects_ptr[scene_objects_ptr.size()-1]->set_properties(0.9,0.0,ColorRGB(1,1,1),1,0);
     scene_objects_ptr[scene_objects_ptr.size()-1]->belong = WALL;
 
     // // down
@@ -342,6 +342,8 @@ void Scene::place_lights(){
     //     }
     // }
     light_objects.push_back(LightPoint(glm::vec3(0,2*R,R)));
+    // light_objects.push_back(LightPoint(glm::vec3(0,-2*R,R)));
+
 }
 
 void Scene::trace_prep(){
@@ -589,6 +591,13 @@ void Scene::trace_photon(Ray r,int depth,int& n_photon){
         Ray reflection_ray;
         reflection_ray.direction = reflection_ray_dir;
         reflection_ray.origin = intersectionPoint;
+        // KDTreeNode node;
+        // node.p.dir = -r.direction;
+        // node.p.pos = intersectionPoint;
+        // //TODO: check the spectral power 
+        // node.p.spectral = glm::vec3(nearest_object->color.x,nearest_object->color.y,nearest_object->color.z);
+        // photon_map.insert(node);
+        // n_photon++;
         trace_photon(reflection_ray,depth-1,n_photon);
     }else if (r1<(nearest_object->reflection+nearest_object->refraction)){
         // photon is refracted
@@ -600,6 +609,13 @@ void Scene::trace_photon(Ray r,int depth,int& n_photon){
         Ray refraction_ray;
         refraction_ray.direction = refraction_dir;
         refraction_ray.origin = intersectionPoint;
+        // KDTreeNode node;
+        // node.p.dir = -r.direction;
+        // node.p.pos = intersectionPoint;
+        // //TODO: check the spectral power 
+        // node.p.spectral = glm::vec3(nearest_object->color.x,nearest_object->color.y,nearest_object->color.z);
+        // photon_map.insert(node);
+        // n_photon++;
         trace_photon(refraction_ray,depth-1,n_photon);
     }else{
         // photon is absorbed
@@ -607,7 +623,7 @@ void Scene::trace_photon(Ray r,int depth,int& n_photon){
         node.p.dir = -r.direction;
         node.p.pos = intersectionPoint;
         //TODO: check the spectral power 
-        node.p.spectral = glm::vec3(1,1,1)/(float)N_PHOTONS_GLOBAL;
+        node.p.spectral = glm::vec3(nearest_object->color.x,nearest_object->color.y,nearest_object->color.z);
         photon_map.insert(node);
         n_photon++;
         // std::cout<<"photon is added "<<n_photon<<"\n";
@@ -742,7 +758,8 @@ ColorRGB Scene::indirect_illumination(Ray ray){
     std::vector<KDTreeNode> contributing_photons;
     photon_map.find_within_range(intersection_node,PHOTON_RADIUS,std::back_insert_iterator<std::vector<KDTreeNode> >(contributing_photons));
 
-    ColorRGB total;
+    ColorRGB total(0,0,0);
+    std::cout<<"n: "<<contributing_photons.size()<<"\n";
     for(int i=0;i<contributing_photons.size();i++){
         //TODO: check the relation, needs to be updated *nearest_object->diffuse*nearest_object->reflection
         total += contributing_photons[i].p.spectral;
