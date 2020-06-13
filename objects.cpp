@@ -130,7 +130,7 @@ void Cylinder::update_position(float angle){
     
 Wall::Wall(glm::vec3 cl,glm::vec3 n){
     type = 3;
-    color = cl;
+    center = cl;
     normal = n;
 }
 
@@ -142,21 +142,21 @@ bool Wall::intersect(Ray r,float& t){
     }
     t = dot(center - r.origin,normal) / directions_dot_prod;
 
-    if (t < 1e-2) { // the plane is behind the ray
+    if (t < 1e-6) { // the plane is behind the ray
         // t = ;
         return false;
     }
-    // glm::vec3 intersection = r.origin + r.direction*t;
+    glm::vec3 intersection = r.origin + r.direction*t;
 
     // if(intersection.x>2*R||intersection.y>2*R||intersection.z>2*R){
     //     return false;
     // }
 
 
-    // if(intersection.x>2*R||intersection.y>2*R||intersection.z>2*R){
-    //     return false;
-    // }
-    return true;
+    // // if(intersection.x>2*R||intersection.y>2*R||intersection.z>2*R){
+    // //     return false;
+    // // }
+    return (t>=0);
 
 
 }
