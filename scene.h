@@ -2,7 +2,7 @@
 #define SCENE_H
 #include <vector>
 #include <iostream>
-#include <glm/glm.hpp>
+#include "glm/glm.hpp"
 #include "utils.h"
 #include "objects.h"
 #include "camera.h"
@@ -17,6 +17,7 @@ class Scene{
     public:
     std::vector<Object> scene_objects;
     std::vector<Object *> scene_objects_ptr;
+    std::vector<Object *> glassy_scene_objects_ptr;
     std::vector<Object *> snow_man;
     std::vector<Sphere> scene_spheres;
     std::vector<Cylinder> scene_cylinders;
@@ -24,6 +25,7 @@ class Scene{
     std::vector<LightPoint> light_objects;
     std::vector<LightPoint *> lights;
     KDTree::KDTree<3, KDTreeNode> photon_map;
+    KDTree::KDTree<3, KDTreeNode> caustic_photon_map;
     int toggle=2;
     bool anti_aliasing=false;
     // just for testing
@@ -74,6 +76,8 @@ class Scene{
 
     void trace_photon(Ray p,int depth,int& n_photon);
 
+    void trace_caustic_photon(Ray p,int depth,int& n_photon,int glass,glm::vec3 color);
+
     ColorRGB shade(Object* obj,Ray normal,glm::vec3 intersection,Ray incident);
 
     // 20th March 
@@ -82,9 +86,14 @@ class Scene{
     // should be called everytime before tracing rays
     void compute_photon_map();
 
+    void compute_caustic_photon_map();
+
+
     // this function is the tracer used after creating 
     // the photon map ( in place of the old trace_ray)
     ColorRGB indirect_illumination(Ray ray);
+
+    ColorRGB indirect_caustic_illumination(Ray ray);
 
 };
 

@@ -69,6 +69,15 @@ void Sphere::update_position(float angle){
     // center = rotate_point_yconstant(center,angle);
 }
 
+Ray Sphere::b_box()
+{
+    float R = radius;
+    glm::vec3 dir = glm::vec3(center.x-radius + (float(rand())/float((RAND_MAX)))*2*R,center.y-radius + (float(rand())/float((RAND_MAX)))*2*R,center.z-radius + (float(rand())/float((RAND_MAX)))*2*R);
+    Ray r(glm::vec3(0,0,0),dir);
+    // if(dir.y>0 && dir.y<1)
+    // std::cout << dir.x << " " << dir.y << " " << dir.z << std::endl;
+    return r;
+}
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////Cylinder//////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -123,6 +132,15 @@ void Cylinder::update_position(float angle){
     // bottom_center = rotate_point_yconstant(bottom_center,angle);
 }
 
+Ray Cylinder::b_box()
+{
+    glm::vec3 center = bottom_center;
+    float R = radius;
+    glm::vec3 dir = glm::vec3(center.x-radius + (float(rand())/float((RAND_MAX)))*2*R,center.y+ (float(rand())/float((RAND_MAX)))*length,center.z-radius + (float(rand())/float((RAND_MAX)))*2*R);
+    Ray r(glm::vec3(0,0,0),dir);
+    return r;
+}
+
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////Wall//////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -153,9 +171,9 @@ bool Wall::intersect(Ray r,float& t){
     // }
 
 
-    // if(intersection.x>2*R||intersection.y>2*R||intersection.z>2*R){
-    //     return false;
-    // }
+    // // if(intersection.x>2*R||intersection.y>2*R||intersection.z>2*R){
+    // //     return false;
+    // // }
     return (t>=0);
 
 
@@ -163,4 +181,12 @@ bool Wall::intersect(Ray r,float& t){
 
 Ray Wall::getNormal(glm::vec3 intersection){
     return Ray(intersection,normal);
+}
+
+Ray Wall::b_box()
+{
+    glm::vec3 dir = glm::vec3(float(rand())/float((RAND_MAX)),float(rand())/float((RAND_MAX)),float(rand())/float((RAND_MAX)));
+    Ray r(glm::vec3(0,0,0),dir);
+    return r;
+
 }

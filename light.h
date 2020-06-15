@@ -3,7 +3,7 @@
 
 #include <vector>
 #include <iostream>
-#include <glm/glm.hpp> 
+#include "glm/glm.hpp"
 
 typedef glm::vec3 ColorRGB;
 

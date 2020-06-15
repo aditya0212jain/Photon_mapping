@@ -17,7 +17,6 @@ class Object{
     bool isSnowman= false;
     int belong=0;
     float absorption;
-    // TODO: need to add refractive index
 
     void set_properties(float refl,float refr,glm::vec3 colr,float diff,float spec);
 
@@ -26,6 +25,8 @@ class Object{
     virtual Ray getNormal(glm::vec3 intersection){return Ray();};
 
     virtual void update_position(float angle){ return ;};
+
+    virtual Ray b_box(){return Ray();};
 };
 
 
@@ -47,6 +48,8 @@ class Sphere: public Object{
 
     void update_position(float angle);
 
+    Ray b_box();
+
 };
 
 class Cylinder: public Object{
@@ -66,6 +69,8 @@ class Cylinder: public Object{
 
     void update_position(float angle);
 
+    Ray b_box();
+
 };
 
 
@@ -80,6 +85,8 @@ class Wall: public Object{
     bool intersect(Ray r,float& t);
 
     Ray getNormal(glm::vec3 intersection);
+
+    Ray b_box();
 
 };
 
