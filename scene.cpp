@@ -343,7 +343,7 @@ void Scene::place_lights(){
     //     }
     // }
     light_objects.push_back(LightPoint(glm::vec3(0,2*R,0)));
-    // light_objects.push_back(LightPoint(glm::vec3(0,-2*R,R)));
+
 
 }
 
@@ -425,7 +425,7 @@ ColorRGB Scene::trace(int x,int y,int width,int height){
     ray.direction = normalize(ray.direction);
     // std::cout<<"x,y,z: "<<ray.direction.x<<" "<<ray.direction.y<<" "<<ray.direction.z<<"\n";
     // return trace_global_illumination(ray,TRACE_DEPTH,nullptr);
-    return indirect_illumination(ray);
+    return trace_ray(ray,TRACE_DEPTH,nullptr);
     // return trace_ray(ray,TRACE_DEPTH,nullptr);
     return indirect_caustic_illumination(ray);
     // return trace_ray(ray,TRACE_DEPTH,nullptr);
@@ -776,7 +776,7 @@ void Scene::trace_photon(Ray r,int depth,int& n_photon){
 
 ColorRGB Scene::shade(Object* obj,Ray normal,glm::vec3 intersection,Ray incident){
     ColorRGB iShade(0,0,0);
-    iShade = ColorRGB(0.3,0.3,0.3)*obj->diffuse;
+    iShade = ColorRGB(0,0,0)*obj->diffuse;
     for(int i=0;i<light_objects.size();i++){
         float attenuation = light_objects[i].DistanceDrop(intersection);
         //// shadow attenuation required

@@ -155,8 +155,8 @@ int main( int argc, char* args[] )
    
    scene.make_scene();
    scene.trace_prep();
-   scene.compute_photon_map();
-   // scene.compute_caustic_photon_map();
+   // scene.compute_photon_map();
+   scene.compute_caustic_photon_map();
    ////////////////////////////////////////////////////////////////////
    ///////////////////////Changing Data//////////////////////////////////////
 
@@ -170,6 +170,16 @@ int main( int argc, char* args[] )
       for(int i=0;i<height;i++){
          for(int j=0;j<width;j++){
             ColorRGB col = scene.trace(j,i,width,height);
+            // if(col.x>1)
+            // {
+            //   std::cout << col.x <<std::endl;
+            // }
+            if(col.x>1)
+              col.x=1;
+            if(col.y>1)
+              col.y=1;
+            if(col.z>1)
+              col.z=1;
             data[pixel++] = col.x*255;
             data[pixel++] = col.y*255;
             data[pixel++] = col.z*255;
