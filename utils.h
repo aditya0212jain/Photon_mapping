@@ -3,7 +3,7 @@
 
 #include <vector>
 #include <iostream>
-#include <glm/glm.hpp>
+#include "glm/glm.hpp"
 #include "light.h"
 
 #define SNOWMAN 1
@@ -16,7 +16,7 @@
 
 #define TRACE_DEPTH_PHOTON 3
 #define PHOTON_RADIUS 0.5
-#define N_PHOTONS_GLOBAL 3000000
+#define N_PHOTONS_GLOBAL 1000000
 #define N_PHOTONS_CAUSTIC 10000
 #define CAUSTIC_PHOTON_RADIUS 0.5
 #define TRACE_DEPTH_CAUSTIC_PHOTON 3
