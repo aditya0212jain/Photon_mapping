@@ -1,5 +1,9 @@
 #include "light.h"
 #include "scene.h"
+#include "objects.h"
+// #include "light.h"
+#include "glm/glm.hpp"
+
 
 Ray::Ray(){
     origin = glm::vec3(0,0,0);
@@ -15,6 +19,20 @@ LightPoint::LightPoint(glm::vec3 o){
     origin = o;
     initial_origin = o;
     color = ColorRGB(1,1,1);
+}
+
+std::vector<glm::vec3> LightPoint::get_rand(int num)
+{
+    std::vector<glm::vec3> randx;
+    for(int i=0;i<num;i++)
+    {
+        // float r1 = float(rand())/float((RAND_MAX));
+        glm::vec3 rand1 = glm::vec3(origin.x - (float)3 + (float(rand())/float((RAND_MAX)))*(float)6, origin.y, origin.z-(float)3 + (float(rand())/float((RAND_MAX)))*(float)6);
+        // glm::vec3 rand1 = origin;
+
+        randx.push_back(rand1);
+    }
+    return randx;
 }
 
 float LightPoint::DistanceDrop(glm::vec3 intersection){

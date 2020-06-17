@@ -171,7 +171,6 @@ void Scene::place_all_objects_2(){
     scene_objects_ptr.push_back(new Sphere(R,glm::vec3(-R,-R,-R),0));
     scene_objects_ptr[scene_objects_ptr.size()-1]->set_properties(0.9,0.0,glm::vec3(1,1,1),0.10,0.90);
     scene_objects_ptr[scene_objects_ptr.size()-1]->belong=BALL;
-
     //placing snowman
     // place_snowman();
 
@@ -608,6 +607,11 @@ ColorRGB Scene::trace(int x,int y,int width,int height){
     float yt = (y - hby2)*tanV/hby2;
     glm::vec3 screenPoint(xt+ref.x,yt+ref.y,ref.z);
 
+    // if(screenPoint.y >= 2*3-1 && screenPoint.x<3 && screenPoint.x>-3 && screenPoint.z<3 && screenPoint.z>-3 )
+    // {
+    //     std::cout << ":yooo"<<std::endl;
+    // return ColorRGB(1,1,1);
+    // }
     // Distributed Ray Tracing
     // Anti Aliasing
     int n = 5;
@@ -692,6 +696,11 @@ ColorRGB Scene::trace_ray(Ray ray,int depth,Object* exclude){
     }
     
     glm::vec3 intersectionPoint = ray.origin + ray.direction*(minD);
+        if(intersectionPoint.y >= 5.80 && intersectionPoint.x<3 && intersectionPoint.x>-3 && intersectionPoint.z<3 && intersectionPoint.z>-3 )
+    {
+        // std::cout << ":yooo"<<std::endl;
+    return ColorRGB(1,1,1);
+    }
     Ray normal = nearest_object->getNormal(intersectionPoint);
 
     bool inside = false;
@@ -707,7 +716,7 @@ ColorRGB Scene::trace_ray(Ray ray,int depth,Object* exclude){
 
     ColorRGB total;
     // total = caustic_component +  directlight_component + montecarlotrace_component;
-    total =  directlight_component + montecarlotrace_component + indirect_component  + caustic_component;//
+    total =  directlight_component + montecarlotrace_component+caustic_component+indirect_component;
     total = total * nearest_object->color;
     return total;
     // if(nearest_object->belong==SNOWMAN){
@@ -855,23 +864,30 @@ ColorRGB Scene::direct_illumination(Object* obj,Ray normal,glm::vec3 intersectio
     // ambient color, will remove later when indirect illumination is added
     iShade = ColorRGB(0.0,0.0,0.0);
     for(int i=0;i<light_objects.size();i++){
-        float attenuation = light_objects[i].DistanceDrop(intersection);
-        //// shadow attenuation required
-        float shadow_att = light_objects[i].ShadowDrop(this,intersection);
-        ColorRGB light_color;
-        Ray l = light_objects[i].getL(intersection);
-        glm::vec3 h = incident.direction + l.direction;
-        h = normalize(h);
-        float temp = dot(h,normal.direction);
-        temp = pow(temp,5);
-        float combined = obj->diffuse*(dot(l.direction,normal.direction)) +
-                            obj->specular*(temp);
-
-        light_color = light_objects[i].color*combined;
-        iShade += light_color*attenuation*shadow_att*std::max(0.0f,dot(l.direction,normal.direction));
+        LightPoint lp = light_objects[i];
+        std::vector<glm::vec3> light_objects_rand = lp.get_rand(50);
         
+        for(int j=0;j<light_objects_rand.size();j++)
+        {
+            LightPoint lp1 = LightPoint(light_objects_rand[j]);    
+            float attenuation = lp1.DistanceDrop(intersection);
+            //// shadow attenuation required
+            float shadow_att = lp1.ShadowDrop(this,intersection);
+            ColorRGB light_color;
+            Ray l = lp1.getL(intersection);
+            glm::vec3 h = incident.direction + l.direction;
+            h = normalize(h);
+            float temp = dot(h,normal.direction);
+            temp = pow(temp,5);
+            float combined = obj->diffuse*(dot(l.direction,normal.direction)) +
+                                obj->specular*(temp);
 
-
+            light_color = lp1.color*combined;
+            iShade += light_color*attenuation*shadow_att*std::max(0.0f,dot(l.direction,normal.direction));
+        
+        }
+        int y = light_objects_rand.size();
+        iShade = iShade*(float)(1.0/((float)y));
     }
     // return iShade;
     return iShade;
@@ -885,6 +901,7 @@ ColorRGB Scene::montecarlotrace_illumination(Object* nearest_object,Ray normal,g
     // }
 
     if(nearest_object->belong==GLASS){
+
         glm::vec3 reflection_ray = ray.direction - (normal.direction * (dot(normal.direction,ray.direction)*2));
         reflection_ray = normalize(reflection_ray);
         float bias = 1e-4;
@@ -894,28 +911,32 @@ ColorRGB Scene::montecarlotrace_illumination(Object* nearest_object,Ray normal,g
         float ior = 1.52;
         float eta = (inside) ? ior : 1 / ior; // are we inside or outside the surface?
         float cosi = dot(-normal.direction,ray.direction);
+        // std::cout << cosi <<" "<<abs(cosi) <<std::endl;
         float k = 1 - eta * eta * (1 - cosi * cosi);
+        float cosi1 = 0;
+        if(cosi<0) cosi1 = -cosi;
+        else cosi1 = cosi;
 
-
-
-        glm::vec3 refraction_dir = ray.direction * eta + normal.direction * (float)(eta *  abs(cosi) - sqrt(k));
+        glm::vec3 refraction_dir = ray.direction * eta + normal.direction * (float)(eta *  cosi1 - sqrt(k));
         refraction_dir = normalize(refraction_dir);
 
         if(k<0){
             // total internal reflection
+
             ColorRGB I_reflection = trace_ray(Ray(intersectionPoint+normal.direction*bias,reflection_ray),depth -1,nearest_object);
             return I_reflection;
             // return 
         }
 
-        
+        // std::cout << " YOOOOOOO " << std::endl;
         // float fresnel;
         // fresnelcompute(ray.direction,normal.direction,1.5,fresnel);
         float x1 = (1- 1.52)/(1+1.52);
         x1*=x1;
-        float schlick = x1 + (1.0 - x1)*glm::pow(1.0-abs(cosi),5);
+        
+        float schlick = x1 + (1.0 - x1)*glm::pow(1.0-cosi1,5);
 
-
+        // std::cout << x1<< " " << schlick << " "<<abs(cosi) <<std::endl;
         ColorRGB I_refraction;
         
         I_refraction = trace_ray(Ray(intersectionPoint-normal.direction*bias,refraction_dir),depth -1,nearest_object);
@@ -931,6 +952,7 @@ ColorRGB Scene::montecarlotrace_illumination(Object* nearest_object,Ray normal,g
     }else if(nearest_object->belong==CYLINDER){
         return nearest_object->emissionColor;
     }else if(nearest_object->belong==WALL){
+
 
         // TODO: Check the following
         return ColorRGB(0,0,0);

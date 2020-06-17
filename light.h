@@ -37,6 +37,8 @@ class LightPoint{
 
     LightPoint(glm::vec3 o);
 
+    std::vector<glm::vec3> get_rand(int num);
+
     float DistanceDrop(glm::vec3 intersection);
 
     Ray getL(glm::vec3 intersection);
