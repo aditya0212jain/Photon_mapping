@@ -161,77 +161,16 @@ void Scene::place_all_objects_2(){
     ColorRGB cyan(0,1,1);
     ColorRGB orange(1,0.647,0);
     ColorRGB magenta(1,0,1);
-    for(int i=0;i<1;i++){
-        float angle = i*30;
-        float x = 1.5*R*cos(M_PI*angle/180);
-        float z = 1.5*R*sin(M_PI*angle/180);
-        // Sphere s(R/4,glm::vec3(x,-2*R+R/4,z));
-        float refle = ((i+1)%2==0) ? 0.30:0.9;
-        float refra = ((i+1)%2==0) ? 0.60:0.0;
-        ColorRGB coltemp;
-        switch ((i+1)%3)
-        {
-        case 0:
-            coltemp = cyan;
-            break;
-        case 1:
-            coltemp = orange;
-            break;
-        case 2:
-            coltemp = magenta;
-        default:
-            break;
-        }
-        if((i+1)%2==0){
-            coltemp=glm::vec3(1,1,1);
-        }
-        //reflection, refraction, color, diffuse, spec
-        scene_objects_ptr.push_back(new Sphere(R/4,glm::vec3(x,-2*R+R/4,z),i%2));
-        scene_objects_ptr[scene_objects_ptr.size()-1]->set_properties(refle,refra,coltemp,0.25,0.75);
-        if((i+1)%2==0){
-            scene_objects_ptr[scene_objects_ptr.size()-1]->belong=GLASS;
-        }else{
-            scene_objects_ptr[scene_objects_ptr.size()-1]->belong =BALL;
-        }
-    }
-    // placing the 12 balls 
-    // ColorRGB cyan(0,1,1);
-    // ColorRGB orange(1,0.647,0);
-    // ColorRGB magenta(1,0,1);
-    for(int i=0;i<1;i++){
-        float angle = 0;
-        float x = 0;
-        float z = 0;
-        // Sphere s(R/4,glm::vec3(x,-2*R+R/4,z));
-        float refle = (i%2==0) ? 0.30:0.9;
-        float refra = (i%2==0) ? 0.60:0.0;
-        ColorRGB coltemp;
-        switch (i%3)
-        {
-        case 0:
-            coltemp = ColorRGB(1,1,1);
-            break;
-        case 1:
-            coltemp = orange;
-            break;
-        case 2:
-            coltemp = magenta;
-        default:
-            break;
-        }
-        if(i%2==0){
-            coltemp=glm::vec3(1,1,1);
-        }
-        //reflection, refraction, color, diffuse, spec
-        scene_objects_ptr.push_back(new Sphere(R,glm::vec3(x,0,z),i%2));
-        scene_objects_ptr[scene_objects_ptr.size()-1]->set_properties(refle,refra,coltemp,0.25,0.75);
-        if(i%2==0){
-            scene_objects_ptr[scene_objects_ptr.size()-1]->belong=GLASS;
-            glassy_scene_objects_ptr.push_back(scene_objects_ptr[scene_objects_ptr.size()-1]);
-        }else{
-            scene_objects_ptr[scene_objects_ptr.size()-1]->belong =BALL;
-        }
-    }
+    
+
+    scene_objects_ptr.push_back(new Sphere(R,glm::vec3(R,-R,R),0));
+    scene_objects_ptr[scene_objects_ptr.size()-1]->set_properties(0.20,0.7,glm::vec3(1,1,1),0.0,1.0);
+    scene_objects_ptr[scene_objects_ptr.size()-1]->belong=GLASS;
+    glassy_scene_objects_ptr.push_back(scene_objects_ptr[scene_objects_ptr.size()-1]);
+
+    scene_objects_ptr.push_back(new Sphere(R,glm::vec3(-R,-R,-R),0));
+    scene_objects_ptr[scene_objects_ptr.size()-1]->set_properties(0.9,0.0,glm::vec3(1,1,1),0.10,0.90);
+    scene_objects_ptr[scene_objects_ptr.size()-1]->belong=BALL;
 
     //placing snowman
     // place_snowman();
@@ -256,7 +195,7 @@ void Scene::place_all_objects_2(){
     scene_objects_ptr[scene_objects_ptr.size()-1]->belong = WALL;
 
     scene_objects_ptr.push_back(new Wall(glm::vec3(0,R,-2*R),glm::vec3(0,0,1)));
-    scene_objects_ptr[scene_objects_ptr.size()-1]->set_properties(0.9,0.0,ColorRGB(1,1,1),1,0);
+    scene_objects_ptr[scene_objects_ptr.size()-1]->set_properties(0.9,0.0,ColorRGB(0,1,0),1,0);
     scene_objects_ptr[scene_objects_ptr.size()-1]->belong = WALL;
 
     // scene_objects_ptr.push_back(new Wall(glm::vec3(0,R,2*R),glm::vec3(0,0,-1)));
@@ -325,7 +264,13 @@ void Scene::place_lights(){
     //         }
     //     }
     // }
-    light_objects.push_back(LightPoint(glm::vec3(0,2*R,-R)));
+    light_objects.push_back(LightPoint(glm::vec3(0,2*R,0)));
+    // light_objects.push_back(LightPoint(glm::vec3(-2*R,R,0)));
+    // light_objects.push_back(LightPoint(glm::vec3(2*R,R,0)));
+    // light_objects.push_back(LightPoint(glm::vec3(R/2,2*R,-R/2)));
+    // light_objects.push_back(LightPoint(glm::vec3(-R/2,2*R,-R/2)));
+    // light_objects.push_back(LightPoint(glm::vec3(R/2,2*R,R/2)));
+    // light_objects.push_back(LightPoint(glm::vec3(-R/2,2*R,R/2)));
     // light_objects.push_back(LightPoint(glm::vec3(0,-2*R,R)));
 
 }
@@ -758,11 +703,11 @@ ColorRGB Scene::trace_ray(Ray ray,int depth,Object* exclude){
     ColorRGB caustic_component = caustic_illumination(intersectionPoint,nearest_object);
     ColorRGB indirect_component = indirect_illumination(intersectionPoint,nearest_object);
     ColorRGB directlight_component = direct_illumination(nearest_object,normal,intersectionPoint,ray);
-    // ColorRGB montecarlotrace_component = montecarlotrace_illumination(nearest_object,normal,intersectionPoint,ray,depth);
+    ColorRGB montecarlotrace_component = montecarlotrace_illumination(nearest_object,normal,intersectionPoint,ray,depth,inside);
 
     ColorRGB total;
     // total = caustic_component +  directlight_component + montecarlotrace_component;
-    total = indirect_component + caustic_component + directlight_component;
+    total =  directlight_component + montecarlotrace_component + indirect_component  + caustic_component;//
     total = total * nearest_object->color;
     return total;
     // if(nearest_object->belong==SNOWMAN){
@@ -924,18 +869,20 @@ ColorRGB Scene::direct_illumination(Object* obj,Ray normal,glm::vec3 intersectio
 
         light_color = light_objects[i].color*combined;
         iShade += light_color*attenuation*shadow_att*std::max(0.0f,dot(l.direction,normal.direction));
+        }
+
 
     }
     // return iShade;
     return iShade;
 }
 
-ColorRGB Scene::montecarlotrace_illumination(Object* nearest_object,Ray normal,glm::vec3 intersectionPoint,Ray ray,int depth){
-    bool inside = false;
-    if (dot(normal.direction,ray.direction)>0){
-        inside = true;
-        normal.direction = -normal.direction;
-    }
+ColorRGB Scene::montecarlotrace_illumination(Object* nearest_object,Ray normal,glm::vec3 intersectionPoint,Ray ray,int depth,bool inside){
+    // bool inside = false;
+    // if (dot(normal.direction,ray.direction)>0){
+    //     inside = true;
+    //     normal.direction = -normal.direction;
+    // }
 
     if(nearest_object->belong==GLASS){
         glm::vec3 reflection_ray = ray.direction - (normal.direction * (dot(normal.direction,ray.direction)*2));
@@ -944,27 +891,40 @@ ColorRGB Scene::montecarlotrace_illumination(Object* nearest_object,Ray normal,g
 
         // float facingratio = -ray.direction.dot(normal.direction);
         // float fresnel = 1*(0.1) + (1-0.1)*pow(1-facingratio,3);
-        float ior = 1.1, eta = (inside) ? ior : 1 / ior; // are we inside or outside the surface?
+        float ior = 1.52;
+        float eta = (inside) ? ior : 1 / ior; // are we inside or outside the surface?
         float cosi = dot(-normal.direction,ray.direction);
         float k = 1 - eta * eta * (1 - cosi * cosi);
-        glm::vec3 refraction_dir = ray.direction * eta + normal.direction * (float)(eta *  cosi - sqrt(k));
+
+
+
+        glm::vec3 refraction_dir = ray.direction * eta + normal.direction * (float)(eta *  abs(cosi) - sqrt(k));
         refraction_dir = normalize(refraction_dir);
 
+        if(k<0){
+            // total internal reflection
+            ColorRGB I_reflection = trace_ray(Ray(intersectionPoint+normal.direction*bias,reflection_ray),depth -1,nearest_object);
+            return I_reflection;
+            // return 
+        }
+
         
-        float fresnel;
-        fresnelcompute(ray.direction,normal.direction,1.5,fresnel);
+        // float fresnel;
+        // fresnelcompute(ray.direction,normal.direction,1.5,fresnel);
+        float x1 = (1- 1.52)/(1+1.52);
+        x1*=x1;
+        float schlick = x1 + (1.0 - x1)*glm::pow(1.0-abs(cosi),5);
+
 
         ColorRGB I_refraction;
-        if(fresnel>1){
-            I_refraction=glm::vec3(0);
-        }else{
-            I_refraction = trace_ray(Ray(intersectionPoint-normal.direction*bias,refraction_dir),depth -1,nearest_object);
-        }
+        
+        I_refraction = trace_ray(Ray(intersectionPoint-normal.direction*bias,refraction_dir),depth -1,nearest_object);
 
         ColorRGB I_reflection = trace_ray(Ray(intersectionPoint+normal.direction*bias,reflection_ray),depth -1,nearest_object);
         
-        // ColorRGB fresnelcolor = (I_reflection*(fresnel/nearest_object->reflection) + I_refraction*((1-fresnel)/nearest_object->refraction));
-        ColorRGB ans = I_reflection*nearest_object->reflection*nearest_object->specular + I_refraction*nearest_object->refraction;
+        // ColorRGB fresnelcolor = (I_reflection*(fresnel/(nearest_object->reflection*nearest_object->specular)) + I_refraction*((1-fresnel)/nearest_object->refraction));
+        ColorRGB ans = I_reflection*schlick + I_refraction*(1-schlick);
+        // ColorRGB ans = I_reflection*nearest_object->reflection*nearest_object->specular + I_refraction*nearest_object->refraction;
         return ans;
         // return fresnelcolor;
 

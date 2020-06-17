@@ -95,7 +95,7 @@ class Scene{
 
     ColorRGB direct_illumination(Object* obj,Ray normal,glm::vec3 intersection,Ray incident);
 
-    ColorRGB montecarlotrace_illumination(Object* obj,Ray normal,glm::vec3 intersection,Ray incident,int depth);
+    ColorRGB montecarlotrace_illumination(Object* obj,Ray normal,glm::vec3 intersection,Ray incident,int depth,bool inside);
 };
 
 #endif

@@ -3,4 +3,4 @@ All other functions are same as provided in the assignment description
 
 To Compile:
 g++ main.cpp -lGL -lGLEW -lglfw -o raytracer
-g++ main.cpp light.cpp camera.cpp objects.cpp scene.cpp utils.cpp -lGL -lGLEW -lglfw -o raytracer
+g++ main.cpp light.cpp camera.cpp objects.cpp scene.cpp utils.cpp -lGL -lGLEW -lglfw -lgomp -fopenmp-o raytracer
