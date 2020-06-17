@@ -11,6 +11,7 @@
 // #include "light.h"
 // #include "camera.h"
 #include <iostream>
+#include<omp.h>
 
 #define QUIT(m,v)      { fprintf(stderr, "%s:%s\n", m, v); exit(1); }
 
@@ -152,11 +153,13 @@ int main( int argc, char* args[] )
 
    GLubyte data[640*480*3];
    GLubyte color = 0;
+
+   omp_set_num_threads(8);
    
    scene.make_scene();
    scene.trace_prep();
    scene.compute_photon_map();
-   // scene.compute_caustic_photon_map();
+   scene.compute_caustic_photon_map();
    ////////////////////////////////////////////////////////////////////
    ///////////////////////Changing Data//////////////////////////////////////
 
@@ -164,17 +167,28 @@ int main( int argc, char* args[] )
 
    while (!glfwWindowShouldClose(window))
    {
-      int pixel = 0;
+      
       std::cout<<"1\n";
-
-      for(int i=0;i<height;i++){
-         for(int j=0;j<width;j++){
-            ColorRGB col = scene.trace(j,i,width,height);
-            data[pixel++] = col.x*255;
-            data[pixel++] = col.y*255;
-            data[pixel++] = col.z*255;
+      float gamma = 1/2.2;
+      #pragma omp parallel num_threads(16)
+      {
+         std::cout<<"num threads: "<<omp_get_max_threads()<<"\n";
+         #pragma omp for
+         for(int i=0;i<height;i++){
+            for(int j=0;j<width;j++){
+               ColorRGB col = scene.trace(j,i,width,height);
+               // col = glm::clamp(col,0.0f,1.0f);
+               col.x = glm::clamp(glm::pow(col.x,gamma), 0.0f, 1.0f);
+               col.y = glm::clamp(glm::pow(col.y,gamma), 0.0f, 1.0f);
+               col.z = glm::clamp(glm::pow(col.z,gamma), 0.0f, 1.0f);
+               int pixel = (j*3)+(i*3*width);
+               data[pixel++] = col.x*255;
+               data[pixel++] = col.y*255;
+               data[pixel++] = col.z*255;
+            }
          }
       }
+      
 
       //////////////////////////////////////////////////////////////////////////
       glClearColor(0.5, 0.5, 0.5, 0.0);

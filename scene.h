@@ -74,7 +74,7 @@ class Scene{
 
     ColorRGB trace_ray(Ray ray,int depth,Object* exclude);
 
-    void trace_photon(Ray p,int depth,int& n_photon);
+    void trace_photon(Ray p,int depth,int& n_photon,glm::vec3 color);
 
     void trace_caustic_photon(Ray p,int depth,int& n_photon,int glass,glm::vec3 color);
 
@@ -88,13 +88,14 @@ class Scene{
 
     void compute_caustic_photon_map();
 
+    // Illumination components
+    ColorRGB indirect_illumination(glm::vec3 intersectionPoint,Object* nearest_object);
 
-    // this function is the tracer used after creating 
-    // the photon map ( in place of the old trace_ray)
-    ColorRGB indirect_illumination(Ray ray);
+    ColorRGB caustic_illumination(glm::vec3 intersectionPoint,Object* nearest_object);
 
-    ColorRGB indirect_caustic_illumination(Ray ray);
+    ColorRGB direct_illumination(Object* obj,Ray normal,glm::vec3 intersection,Ray incident);
 
+    ColorRGB montecarlotrace_illumination(Object* obj,Ray normal,glm::vec3 intersection,Ray incident,int depth);
 };
 
 #endif
