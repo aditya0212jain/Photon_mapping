@@ -869,7 +869,7 @@ ColorRGB Scene::direct_illumination(Object* obj,Ray normal,glm::vec3 intersectio
 
         light_color = light_objects[i].color*combined;
         iShade += light_color*attenuation*shadow_att*std::max(0.0f,dot(l.direction,normal.direction));
-        }
+        
 
 
     }
