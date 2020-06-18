@@ -298,6 +298,7 @@ void Scene::place_lights(){
     //         }
     //     }
     // }
+    // light_objects.push_back(LightPoint(glm::vec3(0,2*R,2*R)));
     light_objects.push_back(LightPoint(glm::vec3(-R/2,2*R,R/2)));
     light_objects.push_back(LightPoint(glm::vec3(-R/2,2*R,3*R/2)));
     light_objects.push_back(LightPoint(glm::vec3(R/2,2*R,R/2)));
@@ -548,7 +549,7 @@ void Scene::compute_photon_map(){
     #pragma omp parallel
     {
         int num_threads = omp_get_max_threads();
-        std::cout<<"num global photon map threads: "<<num_threads<<"\n";
+        // std::cout<<"num global photon map threads: "<<num_threads<<"\n";
         int n_photon = 0;
         float power = 15.0;
         // std::cout<<"lights: "<<light_objects.size()<<"\n";
@@ -591,7 +592,7 @@ void Scene::compute_caustic_photon_map(){
     #pragma omp parallel
     {
         int num_threads = omp_get_max_threads();
-        std::cout<<"num caustic photon map threads: "<<num_threads<<"\n";
+        // std::cout<<"num caustic photon map threads: "<<num_threads<<"\n";
 
     
         int n_photon = 0;
@@ -943,7 +944,9 @@ ColorRGB Scene::direct_illumination(Object* obj,Ray normal,glm::vec3 intersectio
             int y = 40;
             for(int j=0;j<y;j++)
             {
-                lp1.get_rand_origin();
+                if(j!=0){
+                    lp1.get_rand_origin();
+                }
                 // LightPoint lp1 = LightPoint(light_objects_rand[j]);    
                 float attenuation = lp1.DistanceDrop(intersection);
                 //// shadow attenuation required

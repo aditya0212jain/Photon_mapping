@@ -168,13 +168,13 @@ int main( int argc, char* args[] )
    while (!glfwWindowShouldClose(window))
    {
       
-      std::cout<<"1\n";
+      // std::cout<<"1\n";
       float gamma = 1/2.2;
       int progress = 0;
       int max_pix = height*width;
       #pragma omp parallel num_threads(16)
       {
-         std::cout<<"num threads: "<<omp_get_max_threads()<<"\n";
+         // std::cout<<"num threads: "<<omp_get_max_threads()<<"\n";
          #pragma omp for
          for(int i=0;i<height;i++){
             for(int j=0;j<width;j++){

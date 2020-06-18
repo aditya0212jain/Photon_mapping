@@ -404,10 +404,10 @@ Mesh::Mesh(const char* filename,glm::vec3 translate,glm::vec3 scale){
         }
 
     }
-    std::cout<<"bbox:\n";
-    std::cout<<boxAABB.max.x<<" "<<boxAABB.max.y<<" "<<boxAABB.max.z<<"\n";
-    std::cout<<boxAABB.min.x<<" "<<boxAABB.min.y<<" "<<boxAABB.min.z<<"\n";
-    std::cout<<"#triangles: "<<triangle_list.size()<<"\n";
+    // std::cout<<"bbox:\n";
+    // std::cout<<boxAABB.max.x<<" "<<boxAABB.max.y<<" "<<boxAABB.max.z<<"\n";
+    // std::cout<<boxAABB.min.x<<" "<<boxAABB.min.y<<" "<<boxAABB.min.z<<"\n";
+    // std::cout<<"#triangles: "<<triangle_list.size()<<"\n";
 
 }
 
