@@ -1,6 +1,8 @@
 #ifndef OBJECTS_H
 #define OBJECTS_H
 #include "utils.h"
+#include <fstream>
+#include <sstream>
 
 class Object{
 
@@ -81,6 +83,57 @@ class Wall: public Object{
     glm::vec3 normal;
     
     Wall(glm::vec3 cl,glm::vec3 n=glm::vec3(0.0,0.0,0.0));
+
+    bool intersect(Ray r,float& t);
+
+    Ray getNormal(glm::vec3 intersection);
+
+    Ray b_box();
+
+};
+
+class Triangle: public Object{
+
+    public:
+    glm::vec3 v0;
+    glm::vec3 v1;
+    glm::vec3 v2;
+    glm::vec3 normal;
+
+    Triangle();
+
+    Triangle(glm::vec3 a0,glm::vec3 a1,glm::vec3 a2,glm::vec3 translate);
+
+    bool intersect(Ray r,float& t);
+
+    Ray getNormal(glm::vec3 intersection);
+
+    Ray b_box();
+};
+
+class Box: public Object{
+    public:
+    glm::vec3 max;
+    glm::vec3 min;
+
+    Box();
+
+    void update(glm::vec3 point);
+
+    bool intersect(Ray r);
+
+};
+
+class Mesh:public Object{
+
+    public:
+    std::vector<Triangle*> triangle_list;
+    Triangle* intersected_triangle;
+    Box boxAABB;
+
+    Mesh(const char* object_file="bunny.obj",glm::vec3 translate=glm::vec3(0,0,0));
+
+    Mesh(std::vector<Triangle> tl);
 
     bool intersect(Ray r,float& t);
 

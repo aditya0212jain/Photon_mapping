@@ -163,14 +163,21 @@ void Scene::place_all_objects_2(){
     ColorRGB magenta(1,0,1);
     
 
-    scene_objects_ptr.push_back(new Sphere(R,glm::vec3(R,-R,R),0));
-    scene_objects_ptr[scene_objects_ptr.size()-1]->set_properties(0.20,0.7,glm::vec3(1,1,1),0.0,1.0);
-    scene_objects_ptr[scene_objects_ptr.size()-1]->belong=GLASS;
-    glassy_scene_objects_ptr.push_back(scene_objects_ptr[scene_objects_ptr.size()-1]);
+    // scene_objects_ptr.push_back(new Sphere(R,glm::vec3(R,-R,R),0));
+    // scene_objects_ptr[scene_objects_ptr.size()-1]->set_properties(0.20,0.7,glm::vec3(1,1,1),0.0,1.0);
+    // scene_objects_ptr[scene_objects_ptr.size()-1]->belong=GLASS;
+    // glassy_scene_objects_ptr.push_back(scene_objects_ptr[scene_objects_ptr.size()-1]);
 
-    scene_objects_ptr.push_back(new Sphere(R,glm::vec3(-R,-R,-R),0));
-    scene_objects_ptr[scene_objects_ptr.size()-1]->set_properties(0.9,0.0,glm::vec3(1,1,1),0.10,0.90);
+    // placing a mesh
+    scene_objects_ptr.push_back(new Mesh("cube.obj",glm::vec3(0,0,0)));
+    scene_objects_ptr[scene_objects_ptr.size()-1]->set_properties(0.9,0.0,orange,1.0,0.0);
     scene_objects_ptr[scene_objects_ptr.size()-1]->belong=BALL;
+
+    std::cout<<"scene successfully made"<<"\n";
+
+    // scene_objects_ptr.push_back(new Sphere(R,glm::vec3(-R,-R,-R),0));
+    // scene_objects_ptr[scene_objects_ptr.size()-1]->set_properties(0.9,0.0,glm::vec3(1,1,1),0.10,0.90);
+    // scene_objects_ptr[scene_objects_ptr.size()-1]->belong=BALL;
     //placing snowman
     // place_snowman();
 
@@ -511,6 +518,7 @@ void Scene::compute_photon_map(){
         int n_photon = 0;
         float power = 15.0;
         // std::cout<<"lights: "<<light_objects.size()<<"\n";
+        // #pragma omp for 
         for(int i=0;i<light_objects.size();i++){
 
             while(n_photon<(i+1)*((N_PHOTONS_GLOBAL/light_objects.size())/num_threads)){
@@ -554,6 +562,7 @@ void Scene::compute_caustic_photon_map(){
     
         int n_photon = 0;
         // std::cout<<"lights: "<<light_objects.size()<<"\n";
+        // #pragma omp for
         for(int i=0;i<light_objects.size();i++){
 
             while(n_photon<(N_PHOTONS_CAUSTIC/light_objects.size())/num_threads){
@@ -709,14 +718,14 @@ ColorRGB Scene::trace_ray(Ray ray,int depth,Object* exclude){
         normal.direction = -normal.direction;
     }
 
-    ColorRGB caustic_component = caustic_illumination(intersectionPoint,nearest_object);
-    ColorRGB indirect_component = indirect_illumination(intersectionPoint,nearest_object);
+    // ColorRGB caustic_component = caustic_illumination(intersectionPoint,nearest_object);
+    // ColorRGB indirect_component = indirect_illumination(intersectionPoint,nearest_object);
     ColorRGB directlight_component = direct_illumination(nearest_object,normal,intersectionPoint,ray);
     ColorRGB montecarlotrace_component = montecarlotrace_illumination(nearest_object,normal,intersectionPoint,ray,depth,inside);
 
     ColorRGB total;
     // total = caustic_component +  directlight_component + montecarlotrace_component;
-    total =  directlight_component + montecarlotrace_component+caustic_component+indirect_component;
+    total =  directlight_component + montecarlotrace_component;//+caustic_component+indirect_component;
     total = total * nearest_object->color;
     return total;
     // if(nearest_object->belong==SNOWMAN){

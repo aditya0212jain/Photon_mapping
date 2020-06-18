@@ -190,3 +190,311 @@ Ray Wall::b_box()
     return r;
 
 }
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////TRIANGLE//////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Triangle::Triangle(glm::vec3 a0,glm::vec3 a1,glm::vec3 a2,glm::vec3 translate){
+    float scale = 0.5;
+    // glm::vec3 translate(3,3,3);
+    v0 = a0*scale +translate;
+    v1 = a1*scale +translate;
+    v2 = a2*scale +translate;
+    normal = glm::normalize(glm::cross(v2 - v0,v1 - v0));
+    std::cout<<"triangle\n";
+    std::cout<<v0.x<<" "<<v0.y<<" "<<v0.z<<"\n";
+    std::cout<<v1.x<<" "<<v1.y<<" "<<v1.z<<"\n";
+    std::cout<<v2.x<<" "<<v2.y<<" "<<v2.z<<"\n";
+    std::cout<<normal.x<<" "<<normal.y<<" "<<normal.z<<"\n";
+}
+
+Ray Triangle::getNormal(glm::vec3 intersection){
+    Ray r;
+    r.origin = intersection;
+    r.direction = normal;
+    return r;
+}
+
+Ray Triangle::b_box(){
+    //TODO, dummy for now
+    Ray r;
+    r.origin = glm::vec3(0,0,0);
+    r.direction = normal;
+    return r;
+}
+
+bool Triangle::intersect(Ray r,float& t){
+    glm::vec3 edge1 = v1 - v0;
+    glm::vec3 edge2 = v2-v0;
+    glm::vec3 pVec = glm::cross(r.direction,edge2);
+    float det=glm::dot(edge1,pVec);//edge1.dot(pVec);
+    float eps = 1e-4;
+    if(det>-eps && det <eps)
+    {
+        return false;
+    }
+
+    float invDet=1.f/det;
+    glm::vec3 tVec=r.origin-v0;
+    float u = glm::dot(tVec,pVec)*invDet;
+    // float u=(tVec.dot(pVec))*(invDet);
+    if(u<0.f || u>1.f)
+    {
+        return false;
+    }
+
+    glm::vec3 qVec = glm::cross(tVec,edge1);
+    float v = glm::dot(r.direction,qVec)*(invDet);
+
+    if (v<0.f||v+u>1.f)
+    {
+        return false;
+    }
+    t = glm::dot(edge2,qVec)*(invDet);
+    if (t>eps){
+        return true;
+    }
+    return false;
+
+    // Calculating the point P on the same plane 
+    // float d = glm::dot(normal,v0);
+
+    // // check for parallel ray
+    // if(glm::dot(normal,r.direction)==0){
+    //     return false;
+    // }
+
+    // t = glm::dot(normal,r.origin) + d;
+    // t = t/(glm::dot(normal,r.direction));
+
+    // // return false if triangle is behind the ray i.e. t<0
+    // if(t<0){
+    //     return false;
+    // }
+
+    // glm::vec3 point = r.origin + r.direction*t;
+
+    // // checking point is inside 
+
+    // if(glm::dot(-normal,glm::cross(v1 - v0,point - v0))<0){
+    //     return false;
+    // }
+
+    // if(glm::dot(-normal,glm::cross(v2 - v1,point - v1))<0){
+    //     return false;
+    // }
+
+    // if(glm::dot(-normal,glm::cross(v0 - v2,point - v2))<0){
+    //     return false;
+    // }
+
+    // t = t1;
+    // return true;
+}
+
+Triangle::Triangle(){
+    v0 = glm::vec3(0,0,1);
+    v1 = glm::vec3(0,1,0);
+    v2 = glm::vec3(1,0,0);
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////MESH//////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Mesh::Mesh(const char* filename,glm::vec3 translate){
+    // Loading the mesh from filename
+      
+    std::vector<glm::vec3> vertices;
+    std::vector<glm::vec3> normal;
+    std::vector<glm::vec3> meshVertices;
+    std::vector<glm::vec3> meshNormal;
+    std::vector<int> faceIndex;
+    std::vector<int> normalIndex;
+    // Opening the file
+    std::ifstream in(filename, std::ios::in);
+    if (!in)
+    {
+        std::cerr << "Cannot open " << filename << std::endl;
+        exit(1);
+
+    }
+    // std::cout << vertices.size() << std::endl;
+    std::string line;
+    int x=0;
+    while (std::getline(in, line))
+    {
+
+        // std::cout << x << std::endl;
+        x+=1;
+        //check v for vertices
+        if (line.substr(0,2)=="v "){
+            
+
+            std::istringstream v(line.substr(2));
+            glm::vec3 vert;
+            double x,y,z;
+            v>>x;v>>y;v>>z;
+            vert=glm::vec3(x,y,z);
+            vertices.push_back(vert);
+            // std::cout << vertices[vertices.size()-1].x<< std::endl;
+
+        }
+        //check for texture co-ordinate
+        else if(line.substr(0,3)=="vt "){
+            std::istringstream v(line.substr(3));
+            glm::vec2 tex;
+            int U,V;
+            v>>U;v>>V;
+            tex=glm::vec2(U,V);
+            // Since we are not using texture for now
+            // texture.push_back(tex);
+
+        }
+
+        else if(line.substr(0,3)=="vn "){
+            std::istringstream v(line.substr(3));
+            glm::vec3 norm;
+            double x,y,z;
+            v>>x;v>>y;v>>z;
+            norm=glm::vec3(x,y,z);
+            normal.push_back(norm);
+            
+        }
+    //check for faces
+        else if(line.substr(0,2)=="f "){
+            int a,b,c; //to store mesh index
+            int A,B,C; //to store texture index
+            int a1,b1,c1;
+            //std::istringstream v;
+        //v.str(line.substr(2));
+            const char* chh=line.c_str();
+            sscanf (chh, "f %i/%i/%i %i/%i/%i %i/%i/%i",&a,&a1,&A,&b,&b1,&B,&c,&c1,&C); //here it read the line start with f and store the corresponding values in the variables
+
+            //v>>a;v>>b;v>>c;
+            a--;b--;c--;
+            A--;B--;C--;
+            //std::cout<<a<<b<<c<<A<<B<<C;
+            triangle_list.push_back(new Triangle(vertices[a],vertices[b],vertices[c],translate));
+            boxAABB.update(vertices[a]);
+            boxAABB.update(vertices[b]);
+            boxAABB.update(vertices[c]);
+            // faceIndex.push_back(a);normalIndex.push_back(A);
+            // faceIndex.push_back(b);normalIndex.push_back(B);
+            // faceIndex.push_back(c);normalIndex.push_back(C);
+        }
+
+    }
+
+}
+
+// Mesh::Mesh(std::vector<Triangle> tl){
+//     triangle_list = tl;
+// }
+
+bool Mesh::intersect(Ray r,float&t){
+
+    // Add box check here first 
+
+    // std::cout<<"Mesh intersectio is called\n";
+    // Triangle* nearest_object=nullptr;
+    float minD = INFINITY;
+    // float t;
+    bool intersected = false;
+    // std::cout<<"triangles: "<<triangle_list.size()<<"\n";
+
+    // if(b.intersect(r,t))
+    // Finding intersection
+    if(boxAABB.intersect(r)){
+        for(int i=0;i<triangle_list.size();i++){
+            if(triangle_list[i]->intersect(r,t)){
+                intersected = true;
+                if(t<minD){
+                    minD = t;
+                    intersected_triangle = triangle_list[i];
+                }
+            }
+        }
+    }
+
+    return intersected;
+
+}
+
+Ray Mesh::getNormal(glm::vec3 intersection){
+    Ray r;
+    r.origin = intersection;
+    r.direction = intersected_triangle->normal;
+    return r;
+}
+
+Ray Mesh::b_box(){
+    // TODO, dummy function as of now
+    Ray r;
+    r.origin = glm::vec3(0,0,0);
+    r.direction = glm::vec3(0,0,0);
+    return r;
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////Box//////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Box::Box(){
+    max = glm::vec3(INT_MIN,INT_MIN,INT_MIN);
+    min = glm::vec3(INT_MAX,INT_MAX,INT_MAX);
+}
+
+void Box::update(glm::vec3 point){
+    max.x = point.x > max.x ? point.x : max.x ;
+    max.y = point.y > max.y ? point.y : max.y ;
+    max.z = point.z > max.z ? point.z : max.z ;
+    min.x = point.x < min.x ? point.x : min.x ;
+    min.y = point.y < min.y ? point.y : min.y ;
+    min.z = point.z < min.z ? point.z : min.z ;
+}
+
+void swap(float& t1,float& t2){
+    float t3 = t1;
+    t1 = t2;
+    t2 = t3;
+    return;
+}
+
+bool Box::intersect(Ray r){
+    float tmin = (min.x - r.origin.x) / r.direction.x; 
+    float tmax = (max.x - r.origin.x) / r.direction.x; 
+ 
+    if (tmin > tmax) swap(tmin, tmax); 
+ 
+    float tymin = (min.y - r.origin.y) / r.direction.y; 
+    float tymax = (max.y - r.origin.y) / r.direction.y; 
+ 
+    if (tymin > tymax) swap(tymin, tymax); 
+ 
+    if ((tmin > tymax) || (tymin > tmax)) 
+        return false; 
+ 
+    if (tymin > tmin) 
+        tmin = tymin; 
+ 
+    if (tymax < tmax) 
+        tmax = tymax; 
+ 
+    float tzmin = (min.z - r.origin.z) / r.direction.z; 
+    float tzmax = (max.z - r.origin.z) / r.direction.z; 
+ 
+    if (tzmin > tzmax) swap(tzmin, tzmax); 
+ 
+    if ((tmin > tzmax) || (tzmin > tmax)) 
+        return false; 
+ 
+    if (tzmin > tmin) 
+        tmin = tzmin; 
+ 
+    if (tzmax < tmax) 
+        tmax = tzmax; 
+ 
+    return true; 
+}

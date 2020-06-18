@@ -158,8 +158,8 @@ int main( int argc, char* args[] )
    
    scene.make_scene();
    scene.trace_prep();
-   scene.compute_photon_map();
-   scene.compute_caustic_photon_map();
+   // scene.compute_photon_map();
+   // scene.compute_caustic_photon_map();
    ////////////////////////////////////////////////////////////////////
    ///////////////////////Changing Data//////////////////////////////////////
 
@@ -170,6 +170,8 @@ int main( int argc, char* args[] )
       
       std::cout<<"1\n";
       float gamma = 1/2.2;
+      int progress = 0;
+      int max_pix = height*width;
       #pragma omp parallel num_threads(16)
       {
          std::cout<<"num threads: "<<omp_get_max_threads()<<"\n";
@@ -185,6 +187,8 @@ int main( int argc, char* args[] )
                data[pixel++] = col.x*255;
                data[pixel++] = col.y*255;
                data[pixel++] = col.z*255;
+               progress++;
+               std::cout<<"Redenring done: "<<(progress*100.0/max_pix)<<"%\n";
             }
          }
       }
