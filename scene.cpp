@@ -298,7 +298,10 @@ void Scene::place_lights(){
     //         }
     //     }
     // }
-    light_objects.push_back(LightPoint(glm::vec3(0,2*R,2*R)));
+    light_objects.push_back(LightPoint(glm::vec3(-R/2,2*R,R/2)));
+    light_objects.push_back(LightPoint(glm::vec3(-R/2,2*R,3*R/2)));
+    light_objects.push_back(LightPoint(glm::vec3(R/2,2*R,R/2)));
+    light_objects.push_back(LightPoint(glm::vec3(R/2,2*R,3*R/2)));
     // light_objects.push_back(LightPoint(glm::vec3(-2*R,R,0)));
     // light_objects.push_back(LightPoint(glm::vec3(2*R,R,0)));
     // light_objects.push_back(LightPoint(glm::vec3(R/2,2*R,-R/2)));
@@ -737,7 +740,22 @@ ColorRGB Scene::trace_ray(Ray ray,int depth,Object* exclude){
     }
     
     glm::vec3 intersectionPoint = ray.origin + ray.direction*(minD);
-        if(intersectionPoint.y >= 5.80 && intersectionPoint.x<3 && intersectionPoint.x>-3 && intersectionPoint.z<6 && intersectionPoint.z>0 )
+           if(intersectionPoint.y >= 5.80 && intersectionPoint.x<3 && intersectionPoint.x>0.25 && intersectionPoint.z<6 && intersectionPoint.z>3.5 )
+    {
+        // std::cout << ":yooo"<<std::endl;
+    return ColorRGB(1,1,1);
+    }
+    if(intersectionPoint.y >= 5.80 && intersectionPoint.x<-0.25 && intersectionPoint.x>-3 && intersectionPoint.z<6 && intersectionPoint.z>3.5 )
+    {
+        // std::cout << ":yooo"<<std::endl;
+    return ColorRGB(1,1,1);
+    }
+    if(intersectionPoint.y >= 5.80 && intersectionPoint.x<3 && intersectionPoint.x>0.25 && intersectionPoint.z<2.5 && intersectionPoint.z>0 )
+    {
+        // std::cout << ":yooo"<<std::endl;
+    return ColorRGB(1,1,1);
+    }
+    if(intersectionPoint.y >= 5.80 && intersectionPoint.x<-0.25 && intersectionPoint.x>-3 && intersectionPoint.z<2.5 && intersectionPoint.z>0 )
     {
         // std::cout << ":yooo"<<std::endl;
     return ColorRGB(1,1,1);
