@@ -26,9 +26,13 @@ Or use the make file in the repo.
 
 # Examples
 ![Direct](/doc/direct.png)
+Direct 
 ![Soft_shadows](/doc/softshadows.png)
-![Global_illumination_And_Caustics](/doc/photonMap/png)
+Soft Shadows
+![Global_illumination_And_Caustics](/doc/photonMap.png)
+Global Illumination + Caustics
 ![Global_illumination_And_Caustics_And_SoftShadows](/doc/softshadows_photonMap.png)
+Global Illumination + Caustics + Soft Shadows
 
 # Future Work
 * Add GPU acceleration using CUDA
