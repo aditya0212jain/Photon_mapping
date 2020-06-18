@@ -181,7 +181,7 @@ void Scene::place_all_objects_2(){
     scene_objects_ptr.push_back(new Sphere(R/3,glm::vec3(R-3,-(2*R-(R/3)),3.5*R),0));
     scene_objects_ptr[scene_objects_ptr.size()-1]->set_properties(0.50,0.0,red,0.50,0.50);
     scene_objects_ptr[scene_objects_ptr.size()-1]->belong=BALL;
-    // glassy_scene_objects_ptr.push_back(scene_objects_ptr[scene_objects_ptr.size()-1]);
+    glassy_scene_objects_ptr.push_back(scene_objects_ptr[scene_objects_ptr.size()-1]);
 
     // placing a mesh
     scene_objects_ptr.push_back(new Mesh("cube.obj",glm::vec3(-R-1,-R-1.0,-R),glm::vec3(1,3,1)));
@@ -922,10 +922,10 @@ ColorRGB Scene::direct_illumination(Object* obj,Ray normal,glm::vec3 intersectio
         for(int i=0;i<light_objects.size();i++){
             LightPoint lp1 = light_objects[i];
             // std::vector<glm::vec3> light_objects_rand = lp1.get_rand(20);
-            int y = 1;
-            // for(int j=0;j<y;j++)
-            // {
-            //     lp1.get_rand_origin();
+            int y = 40;
+            for(int j=0;j<y;j++)
+            {
+                lp1.get_rand_origin();
                 // LightPoint lp1 = LightPoint(light_objects_rand[j]);    
                 float attenuation = lp1.DistanceDrop(intersection);
                 //// shadow attenuation required
@@ -948,7 +948,7 @@ ColorRGB Scene::direct_illumination(Object* obj,Ray normal,glm::vec3 intersectio
                 light_color = lp1.color*combined;
                 iShade += light_color*attenuation*shadow_att*std::max(0.0f,dot(l.direction,normal.direction));
             
-            // }
+            }
             // int y = 1;// light_objects_rand.size();
             iShade = iShade*(float)(1.0/((float)y));
         }

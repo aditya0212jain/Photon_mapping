@@ -226,93 +226,23 @@ Ray Triangle::b_box(){
 }
 
 bool Triangle::intersect(Ray r,float& t){
-    glm::vec3 e1 = v1 - v0;
-    glm::vec3 e2 = v2 - v0;
-    glm::vec3 h = glm::cross(r.direction,e2);
-    float a = glm::dot(e1,h);
-    // float e1[3],e2[3],h[3],s[3],q[3];
-	// float a,f,u,v;
-	// vector(e1,v1,v0);
-	// vector(e2,v2,v0);
+    
+    // Indside out method
+    // glm::vec3 n = -normal;
+    // // n = glm::normalize(n);
+    // // r.direction = glm::normalize(r.direction);
+    // float eps=0.00001;
+    // float d = glm::dot(n,v0);
 
-	// crossProduct(h,d,e2);
-	// a = innerProduct(e1,h);
-
-	if (a > -0.00001 && a < 0.00001)
-		return(false);
-
-	float f = 1/a;
-    glm::vec3 s = r.origin - v0;
-	// vector(s,p,v0);
-    float u = f*glm::dot(s,h);
-	// u = f * (innerProduct(s,h));
-
-	if (u < 0.0 || u > 1.0)
-		return(false);
-
-    glm::vec3 q = glm::cross(s,e1);
-	// crossProduct(q,s,e1);
-    float v = f* glm::dot(r.direction,q);
-	// v = f * innerProduct(d,q);
-
-	if (v < 0.0 || u + v > 1.0)
-		return(false);
-
-	// at this stage we can compute t to find out where
-	// the intersection point is on the line
-	t = f * glm::dot(e2,q);
-
-	if (t > 0.00001) // ray intersection
-		return(true);
-
-	else // this means that there is a line intersection
-		 // but not a ray intersection
-		 return (false);
-///////////////////////////////////////////////////
-    // glm::vec3 edge1 = v1 - v0;
-    // glm::vec3 edge2 = v2-v0;
-    // glm::vec3 pVec = glm::cross(r.direction,edge2);
-    // float det=glm::dot(edge1,pVec);//edge1.dot(pVec);
-    // float eps = 1e-4;
-    // if(det>-eps && det <eps)
-    // {
+    // // // check for parallel ray
+    // if(abs(glm::dot(n,r.direction))<eps){
     //     return false;
     // }
 
-    // float invDet=1.f/det;
-    // glm::vec3 tVec=r.origin-v0;
-    // float u = glm::dot(tVec,pVec)*invDet;
-    // // float u=(tVec.dot(pVec))*(invDet);
-    // if(u<0.f || u>1.f)
-    // {
-    //     return false;
-    // }
+    // t = (d - glm::dot(n,r.origin))/(glm::dot(n,r.direction));
+    // // t = t/(glm::dot(n,r.direction));
 
-    // glm::vec3 qVec = glm::cross(tVec,edge1);
-    // float v = glm::dot(r.direction,qVec)*(invDet);
-
-    // if (v<0.f||v+u>1.f)
-    // {
-    //     return false;
-    // }
-    // t = glm::dot(edge2,qVec)*(invDet);
-    // if (t>eps){
-    //     return true;
-    // }
-    // return false;
-
-    // Calculating the point P on the same plane 
-    // float d = glm::dot(normal,v0);
-
-    // // check for parallel ray
-    // if(glm::dot(normal,r.direction)==0){
-    //     return false;
-    // }
-
-    // t = glm::dot(normal,r.origin) + d;
-    // t = t/(glm::dot(normal,r.direction));
-
-    // // return false if triangle is behind the ray i.e. t<0
+    // // // return false if triangle is behind the ray i.e. t<0
     // if(t<0){
     //     return false;
     // }
@@ -321,20 +251,63 @@ bool Triangle::intersect(Ray r,float& t){
 
     // // checking point is inside 
 
-    // if(glm::dot(-normal,glm::cross(v1 - v0,point - v0))<0){
+    // if(glm::dot(n,glm::cross(v1 - v0,point - v0))<0){
     //     return false;
     // }
 
-    // if(glm::dot(-normal,glm::cross(v2 - v1,point - v1))<0){
+    // if(glm::dot(n,glm::cross(v2 - v1,point - v1))<0){
     //     return false;
     // }
 
-    // if(glm::dot(-normal,glm::cross(v0 - v2,point - v2))<0){
+    // if(glm::dot(n,glm::cross(v0 - v2,point - v2))<0){
     //     return false;
     // }
 
-    // t = t1;
+    // // // t = t1;
     // return true;
+
+    // every point inside the triangle can be expressed as (1-u-v)v0 + uv1+ vv2
+    // u>0&&u<1&&v>0&&v<1&&(u+v)<1
+    // area trianhle = cross product two edges starting vertex/2
+    // Moller trumbore method
+    float eps=0.00001;
+    glm::vec3 edge1 = v1 - v0;
+    glm::vec3 edge2 = v2 - v0;
+
+    // det(M)
+    glm::vec3 left_det_c = glm::cross(r.direction,edge2);
+    float det = glm::dot(edge1,left_det_c);
+
+    // when ray is in same plane as triangle
+	if (det > -eps && det < eps)
+		return false;
+
+	float inv_det = 1/det;
+    // calculating u using cramer's rul, det(Mu)/det(M)
+    glm::vec3 s = r.origin - v0;
+    float u = inv_det*glm::dot(s,left_det_c);
+
+    // calculating v using cramer's rule, det(Mv)/det(M)
+    glm::vec3 q = glm::cross(s,edge1);
+    float v = inv_det* glm::dot(r.direction,q);
+
+	if (u < 0.0 || u > 1.0){
+        return false;
+    }
+	
+	if (v < 0.0 || u + v > 1.0)
+		return false;
+
+    // calculating the third dimension t using cramer's rule
+	t = inv_det * glm::dot(edge2,q);
+
+	if (t > eps){
+        return true;
+    }
+	else{
+        return false;
+    }
+
 }
 
 Triangle::Triangle(){
@@ -513,38 +486,35 @@ void swap(float& t1,float& t2){
 }
 
 bool Box::intersect(Ray r){
-    float tmin = (min.x - r.origin.x) / r.direction.x; 
-    float tmax = (max.x - r.origin.x) / r.direction.x; 
+    float t_min = (min.x - r.origin.x) / r.direction.x; 
+    float t_max = (max.x - r.origin.x) / r.direction.x; 
+
+    float t_ymin = (min.y - r.origin.y) / r.direction.y; 
+    float t_ymax = (max.y - r.origin.y) / r.direction.y; 
+
+    float t_zmin = (min.z - r.origin.z) / r.direction.z; 
+    float t_zmax = (max.z - r.origin.z) / r.direction.z; 
  
-    if (tmin > tmax) swap(tmin, tmax); 
+    if (t_min > t_max) swap(t_min, t_max); 
+
+    if (t_ymin > t_ymax) swap(t_ymin, t_ymax); 
+
+    if (t_zmin > t_zmax) swap(t_zmin, t_zmax); 
  
-    float tymin = (min.y - r.origin.y) / r.direction.y; 
-    float tymax = (max.y - r.origin.y) / r.direction.y; 
- 
-    if (tymin > tymax) swap(tymin, tymax); 
- 
-    if ((tmin > tymax) || (tymin > tmax)) 
+    // test similar for 2d box
+    if ((t_min > t_ymax) || (t_ymin > t_max)) 
         return false; 
  
-    if (tymin > tmin) 
-        tmin = tymin; 
+    if (t_ymax < t_max) 
+        t_max = t_ymax; 
+
+    if (t_ymin > t_min) 
+        t_min = t_ymin; 
  
-    if (tymax < tmax) 
-        tmax = tymax; 
- 
-    float tzmin = (min.z - r.origin.z) / r.direction.z; 
-    float tzmax = (max.z - r.origin.z) / r.direction.z; 
- 
-    if (tzmin > tzmax) swap(tzmin, tzmax); 
- 
-    if ((tmin > tzmax) || (tzmin > tmax)) 
+    // extending for 3d
+    if ((t_min > t_zmax) || (t_zmin > t_max)) 
         return false; 
- 
-    if (tzmin > tmin) 
-        tmin = tzmin; 
- 
-    if (tzmax < tmax) 
-        tmax = tzmax; 
+
  
     return true; 
 }
