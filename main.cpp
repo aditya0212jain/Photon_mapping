@@ -158,8 +158,8 @@ int main( int argc, char* args[] )
    
    scene.make_scene();
    scene.trace_prep();
-   // scene.compute_photon_map();
-   // scene.compute_caustic_photon_map();
+   scene.compute_photon_map();
+   scene.compute_caustic_photon_map();
    ////////////////////////////////////////////////////////////////////
    ///////////////////////Changing Data//////////////////////////////////////
 

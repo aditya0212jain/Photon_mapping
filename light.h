@@ -47,6 +47,8 @@ class LightPoint{
 
     void update_position(float angle);
 
+    void get_rand_origin();
+
 };
 
 #endif

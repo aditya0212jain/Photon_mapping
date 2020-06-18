@@ -195,18 +195,19 @@ Ray Wall::b_box()
 //////////////////////////////////////TRIANGLE//////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-Triangle::Triangle(glm::vec3 a0,glm::vec3 a1,glm::vec3 a2,glm::vec3 translate){
-    float scale = 0.5;
+Triangle::Triangle(glm::vec3 a0,glm::vec3 a1,glm::vec3 a2,glm::vec3 translate,float scale){
+    // float scale = 2;
     // glm::vec3 translate(3,3,3);
+    type = 4;
     v0 = a0*scale +translate;
     v1 = a1*scale +translate;
     v2 = a2*scale +translate;
     normal = glm::normalize(glm::cross(v2 - v0,v1 - v0));
-    std::cout<<"triangle\n";
-    std::cout<<v0.x<<" "<<v0.y<<" "<<v0.z<<"\n";
-    std::cout<<v1.x<<" "<<v1.y<<" "<<v1.z<<"\n";
-    std::cout<<v2.x<<" "<<v2.y<<" "<<v2.z<<"\n";
-    std::cout<<normal.x<<" "<<normal.y<<" "<<normal.z<<"\n";
+    // std::cout<<"triangle\n";
+    // std::cout<<v0.x<<" "<<v0.y<<" "<<v0.z<<"\n";
+    // std::cout<<v1.x<<" "<<v1.y<<" "<<v1.z<<"\n";
+    // std::cout<<v2.x<<" "<<v2.y<<" "<<v2.z<<"\n";
+    // std::cout<<normal.x<<" "<<normal.y<<" "<<normal.z<<"\n";
 }
 
 Ray Triangle::getNormal(glm::vec3 intersection){
@@ -225,37 +226,80 @@ Ray Triangle::b_box(){
 }
 
 bool Triangle::intersect(Ray r,float& t){
-    glm::vec3 edge1 = v1 - v0;
-    glm::vec3 edge2 = v2-v0;
-    glm::vec3 pVec = glm::cross(r.direction,edge2);
-    float det=glm::dot(edge1,pVec);//edge1.dot(pVec);
-    float eps = 1e-4;
-    if(det>-eps && det <eps)
-    {
-        return false;
-    }
+    glm::vec3 e1 = v1 - v0;
+    glm::vec3 e2 = v2 - v0;
+    glm::vec3 h = glm::cross(r.direction,e2);
+    float a = glm::dot(e1,h);
+    // float e1[3],e2[3],h[3],s[3],q[3];
+	// float a,f,u,v;
+	// vector(e1,v1,v0);
+	// vector(e2,v2,v0);
 
-    float invDet=1.f/det;
-    glm::vec3 tVec=r.origin-v0;
-    float u = glm::dot(tVec,pVec)*invDet;
-    // float u=(tVec.dot(pVec))*(invDet);
-    if(u<0.f || u>1.f)
-    {
-        return false;
-    }
+	// crossProduct(h,d,e2);
+	// a = innerProduct(e1,h);
 
-    glm::vec3 qVec = glm::cross(tVec,edge1);
-    float v = glm::dot(r.direction,qVec)*(invDet);
+	if (a > -0.00001 && a < 0.00001)
+		return(false);
 
-    if (v<0.f||v+u>1.f)
-    {
-        return false;
-    }
-    t = glm::dot(edge2,qVec)*(invDet);
-    if (t>eps){
-        return true;
-    }
-    return false;
+	float f = 1/a;
+    glm::vec3 s = r.origin - v0;
+	// vector(s,p,v0);
+    float u = f*glm::dot(s,h);
+	// u = f * (innerProduct(s,h));
+
+	if (u < 0.0 || u > 1.0)
+		return(false);
+
+    glm::vec3 q = glm::cross(s,e1);
+	// crossProduct(q,s,e1);
+    float v = f* glm::dot(r.direction,q);
+	// v = f * innerProduct(d,q);
+
+	if (v < 0.0 || u + v > 1.0)
+		return(false);
+
+	// at this stage we can compute t to find out where
+	// the intersection point is on the line
+	t = f * glm::dot(e2,q);
+
+	if (t > 0.00001) // ray intersection
+		return(true);
+
+	else // this means that there is a line intersection
+		 // but not a ray intersection
+		 return (false);
+///////////////////////////////////////////////////
+    // glm::vec3 edge1 = v1 - v0;
+    // glm::vec3 edge2 = v2-v0;
+    // glm::vec3 pVec = glm::cross(r.direction,edge2);
+    // float det=glm::dot(edge1,pVec);//edge1.dot(pVec);
+    // float eps = 1e-4;
+    // if(det>-eps && det <eps)
+    // {
+    //     return false;
+    // }
+
+    // float invDet=1.f/det;
+    // glm::vec3 tVec=r.origin-v0;
+    // float u = glm::dot(tVec,pVec)*invDet;
+    // // float u=(tVec.dot(pVec))*(invDet);
+    // if(u<0.f || u>1.f)
+    // {
+    //     return false;
+    // }
+
+    // glm::vec3 qVec = glm::cross(tVec,edge1);
+    // float v = glm::dot(r.direction,qVec)*(invDet);
+
+    // if (v<0.f||v+u>1.f)
+    // {
+    //     return false;
+    // }
+    // t = glm::dot(edge2,qVec)*(invDet);
+    // if (t>eps){
+    //     return true;
+    // }
+    // return false;
 
     // Calculating the point P on the same plane 
     // float d = glm::dot(normal,v0);
@@ -303,9 +347,10 @@ Triangle::Triangle(){
 //////////////////////////////////////MESH//////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-Mesh::Mesh(const char* filename,glm::vec3 translate){
+Mesh::Mesh(const char* filename,glm::vec3 translate,float scale){
     // Loading the mesh from filename
       
+    type = 5;
     std::vector<glm::vec3> vertices;
     std::vector<glm::vec3> normal;
     std::vector<glm::vec3> meshVertices;
@@ -371,21 +416,22 @@ Mesh::Mesh(const char* filename,glm::vec3 translate){
         //v.str(line.substr(2));
             const char* chh=line.c_str();
             sscanf (chh, "f %i/%i/%i %i/%i/%i %i/%i/%i",&a,&a1,&A,&b,&b1,&B,&c,&c1,&C); //here it read the line start with f and store the corresponding values in the variables
-
+            // sscanf (chh, "f %i/%i/%i",&a,&b,&c);
             //v>>a;v>>b;v>>c;
             a--;b--;c--;
-            A--;B--;C--;
+            // A--;B--;C--;
             //std::cout<<a<<b<<c<<A<<B<<C;
-            triangle_list.push_back(new Triangle(vertices[a],vertices[b],vertices[c],translate));
-            boxAABB.update(vertices[a]);
-            boxAABB.update(vertices[b]);
-            boxAABB.update(vertices[c]);
+            triangle_list.push_back(new Triangle(vertices[a],vertices[b],vertices[c],translate,scale));
+            boxAABB.update(vertices[a]*scale+translate);
+            boxAABB.update(vertices[b]*scale+translate);
+            boxAABB.update(vertices[c]*scale+translate);
             // faceIndex.push_back(a);normalIndex.push_back(A);
             // faceIndex.push_back(b);normalIndex.push_back(B);
             // faceIndex.push_back(c);normalIndex.push_back(C);
         }
 
     }
+    std::cout<<"#triangles: "<<triangle_list.size()<<"\n";
 
 }
 
@@ -423,10 +469,11 @@ bool Mesh::intersect(Ray r,float&t){
 }
 
 Ray Mesh::getNormal(glm::vec3 intersection){
-    Ray r;
-    r.origin = intersection;
-    r.direction = intersected_triangle->normal;
-    return r;
+    // Ray r;
+    // r.origin = intersection;
+    // r.direction = intersected_triangle->normal;
+    // return r;
+    return intersected_triangle->getNormal(intersection);
 }
 
 Ray Mesh::b_box(){

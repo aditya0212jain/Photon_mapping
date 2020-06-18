@@ -61,7 +61,7 @@ float LightPoint::ShadowDrop(Scene* s,glm::vec3 intersection){
     float minD = INFINITY;
     float t;
     for(int i=0;i<s->scene_objects_ptr.size();i++){
-        if(s->scene_objects_ptr[i]->intersect(ray,t)&&s->scene_objects_ptr[i]->type<2){
+        if(s->scene_objects_ptr[i]->intersect(ray,t)&&s->scene_objects_ptr[i]->type!=2&&s->scene_objects_ptr[i]->type!=3){//
             if(t<minD){
                 minD = t;
             }
@@ -80,3 +80,7 @@ void LightPoint::update_position(float angle){
     // origin = initial_origin;
     // origin = rotate_point_yconstant(origin,angle);
 }
+
+void LightPoint::get_rand_origin(){
+    origin = glm::vec3(initial_origin.x - (float)3 + (float(rand())/float((RAND_MAX)))*(float)6, initial_origin.y, initial_origin.z-(float)3 + (float(rand())/float((RAND_MAX)))*(float)6);
+}  

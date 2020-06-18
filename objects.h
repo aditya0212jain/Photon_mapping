@@ -4,6 +4,17 @@
 #include <fstream>
 #include <sstream>
 
+
+/*
+type variable
+Sphere 1
+Cylinder 2
+Wall 3
+Triangle 4
+MEsh 5
+
+*/
+
 class Object{
 
     public:
@@ -102,7 +113,7 @@ class Triangle: public Object{
 
     Triangle();
 
-    Triangle(glm::vec3 a0,glm::vec3 a1,glm::vec3 a2,glm::vec3 translate);
+    Triangle(glm::vec3 a0,glm::vec3 a1,glm::vec3 a2,glm::vec3 translate,float scale);
 
     bool intersect(Ray r,float& t);
 
@@ -131,7 +142,7 @@ class Mesh:public Object{
     Triangle* intersected_triangle;
     Box boxAABB;
 
-    Mesh(const char* object_file="bunny.obj",glm::vec3 translate=glm::vec3(0,0,0));
+    Mesh(const char* object_file="bunny.obj",glm::vec3 translate=glm::vec3(0,0,0),float scale=1.0);
 
     Mesh(std::vector<Triangle> tl);
 

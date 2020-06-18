@@ -163,14 +163,14 @@ void Scene::place_all_objects_2(){
     ColorRGB magenta(1,0,1);
     
 
-    // scene_objects_ptr.push_back(new Sphere(R,glm::vec3(R,-R,R),0));
-    // scene_objects_ptr[scene_objects_ptr.size()-1]->set_properties(0.20,0.7,glm::vec3(1,1,1),0.0,1.0);
-    // scene_objects_ptr[scene_objects_ptr.size()-1]->belong=GLASS;
-    // glassy_scene_objects_ptr.push_back(scene_objects_ptr[scene_objects_ptr.size()-1]);
+    scene_objects_ptr.push_back(new Sphere(R,glm::vec3(R,-R,1.5*R),0));
+    scene_objects_ptr[scene_objects_ptr.size()-1]->set_properties(0.20,0.7,glm::vec3(1,1,1),0.0,1.0);
+    scene_objects_ptr[scene_objects_ptr.size()-1]->belong=GLASS;
+    glassy_scene_objects_ptr.push_back(scene_objects_ptr[scene_objects_ptr.size()-1]);
 
     // placing a mesh
-    scene_objects_ptr.push_back(new Mesh("cube.obj",glm::vec3(0,0,0)));
-    scene_objects_ptr[scene_objects_ptr.size()-1]->set_properties(0.9,0.0,orange,1.0,0.0);
+    scene_objects_ptr.push_back(new Mesh("bunny.obj",glm::vec3(-R,-R,-R),2));
+    scene_objects_ptr[scene_objects_ptr.size()-1]->set_properties(0.9,0.0,magenta,1.0,0.0);
     scene_objects_ptr[scene_objects_ptr.size()-1]->belong=BALL;
 
     std::cout<<"scene successfully made"<<"\n";
@@ -270,7 +270,7 @@ void Scene::place_lights(){
     //         }
     //     }
     // }
-    light_objects.push_back(LightPoint(glm::vec3(0,2*R,0)));
+    light_objects.push_back(LightPoint(glm::vec3(0,2*R,2*R)));
     // light_objects.push_back(LightPoint(glm::vec3(-2*R,R,0)));
     // light_objects.push_back(LightPoint(glm::vec3(2*R,R,0)));
     // light_objects.push_back(LightPoint(glm::vec3(R/2,2*R,-R/2)));
@@ -655,6 +655,7 @@ ColorRGB Scene::trace(int x,int y,int width,int height){
             // std::cout<<"x,y,z: "<<ray.direction.x<<" "<<ray.direction.y<<" "<<ray.direction.z<<"\n";
             // traceColor += trace_global_illumination(ray,TRACE_DEPTH,nullptr);
             // traceColor += indirect_illumination(ray);
+            traceColor += trace_ray(ray,TRACE_DEPTH,nullptr);
         }
 
         traceColor = traceColor*(float)(1.0/((float)n));
@@ -718,14 +719,14 @@ ColorRGB Scene::trace_ray(Ray ray,int depth,Object* exclude){
         normal.direction = -normal.direction;
     }
 
-    // ColorRGB caustic_component = caustic_illumination(intersectionPoint,nearest_object);
-    // ColorRGB indirect_component = indirect_illumination(intersectionPoint,nearest_object);
+    ColorRGB caustic_component = caustic_illumination(intersectionPoint,nearest_object);
+    ColorRGB indirect_component = indirect_illumination(intersectionPoint,nearest_object);
     ColorRGB directlight_component = direct_illumination(nearest_object,normal,intersectionPoint,ray);
     ColorRGB montecarlotrace_component = montecarlotrace_illumination(nearest_object,normal,intersectionPoint,ray,depth,inside);
 
     ColorRGB total;
     // total = caustic_component +  directlight_component + montecarlotrace_component;
-    total =  directlight_component + montecarlotrace_component;//+caustic_component+indirect_component;
+    total =  directlight_component + montecarlotrace_component+caustic_component+indirect_component;
     total = total * nearest_object->color;
     return total;
     // if(nearest_object->belong==SNOWMAN){
@@ -873,15 +874,22 @@ ColorRGB Scene::direct_illumination(Object* obj,Ray normal,glm::vec3 intersectio
     // ambient color, will remove later when indirect illumination is added
     iShade = ColorRGB(0.0,0.0,0.0);
     for(int i=0;i<light_objects.size();i++){
-        LightPoint lp = light_objects[i];
-        std::vector<glm::vec3> light_objects_rand = lp.get_rand(50);
-        
-        for(int j=0;j<light_objects_rand.size();j++)
-        {
-            LightPoint lp1 = LightPoint(light_objects_rand[j]);    
+        LightPoint lp1 = light_objects[i];
+        // std::vector<glm::vec3> light_objects_rand = lp1.get_rand(20);
+        int y = 1;
+        // for(int j=0;j<y;j++)
+        // {
+        //     lp1.get_rand_origin();
+            // LightPoint lp1 = LightPoint(light_objects_rand[j]);    
             float attenuation = lp1.DistanceDrop(intersection);
             //// shadow attenuation required
-            float shadow_att = lp1.ShadowDrop(this,intersection);
+            float shadow_att;
+            if(obj->type==5){
+                shadow_att =1 ;
+            }else{
+                shadow_att = lp1.ShadowDrop(this,intersection);
+            }
+            
             ColorRGB light_color;
             Ray l = lp1.getL(intersection);
             glm::vec3 h = incident.direction + l.direction;
@@ -894,8 +902,8 @@ ColorRGB Scene::direct_illumination(Object* obj,Ray normal,glm::vec3 intersectio
             light_color = lp1.color*combined;
             iShade += light_color*attenuation*shadow_att*std::max(0.0f,dot(l.direction,normal.direction));
         
-        }
-        int y = light_objects_rand.size();
+        // }
+        // int y = 1;// light_objects_rand.size();
         iShade = iShade*(float)(1.0/((float)y));
     }
     // return iShade;
