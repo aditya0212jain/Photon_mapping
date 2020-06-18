@@ -188,7 +188,7 @@ int main( int argc, char* args[] )
                data[pixel++] = col.y*255;
                data[pixel++] = col.z*255;
                progress++;
-               std::cout<<"Redenring done: "<<(progress*100.0/max_pix)<<"%\n";
+               // std::cout<<"Redenring done: "<<(progress*100.0/max_pix)<<"%\n";
             }
          }
       }

@@ -113,7 +113,7 @@ class Triangle: public Object{
 
     Triangle();
 
-    Triangle(glm::vec3 a0,glm::vec3 a1,glm::vec3 a2,glm::vec3 translate,float scale);
+    Triangle(glm::vec3 a0,glm::vec3 a1,glm::vec3 a2,glm::vec3 translate,glm::vec3 scale=glm::vec3(1,1,1));
 
     bool intersect(Ray r,float& t);
 
@@ -142,7 +142,7 @@ class Mesh:public Object{
     Triangle* intersected_triangle;
     Box boxAABB;
 
-    Mesh(const char* object_file="bunny.obj",glm::vec3 translate=glm::vec3(0,0,0),float scale=1.0);
+    Mesh(const char* object_file="bunny.obj",glm::vec3 translate=glm::vec3(0,0,0),glm::vec3 scale=glm::vec3(1,1,1));
 
     Mesh(std::vector<Triangle> tl);
 

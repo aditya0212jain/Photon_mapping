@@ -195,7 +195,7 @@ Ray Wall::b_box()
 //////////////////////////////////////TRIANGLE//////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-Triangle::Triangle(glm::vec3 a0,glm::vec3 a1,glm::vec3 a2,glm::vec3 translate,float scale){
+Triangle::Triangle(glm::vec3 a0,glm::vec3 a1,glm::vec3 a2,glm::vec3 translate,glm::vec3 scale){
     // float scale = 2;
     // glm::vec3 translate(3,3,3);
     type = 4;
@@ -347,7 +347,7 @@ Triangle::Triangle(){
 //////////////////////////////////////MESH//////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-Mesh::Mesh(const char* filename,glm::vec3 translate,float scale){
+Mesh::Mesh(const char* filename,glm::vec3 translate,glm::vec3 scale){
     // Loading the mesh from filename
       
     type = 5;
@@ -431,6 +431,9 @@ Mesh::Mesh(const char* filename,glm::vec3 translate,float scale){
         }
 
     }
+    std::cout<<"bbox:\n";
+    std::cout<<boxAABB.max.x<<" "<<boxAABB.max.y<<" "<<boxAABB.max.z<<"\n";
+    std::cout<<boxAABB.min.x<<" "<<boxAABB.min.y<<" "<<boxAABB.min.z<<"\n";
     std::cout<<"#triangles: "<<triangle_list.size()<<"\n";
 
 }
